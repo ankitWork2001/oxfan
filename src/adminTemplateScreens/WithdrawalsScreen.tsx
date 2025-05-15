@@ -32,7 +32,7 @@ const WithdrawalsScreen = () => {
       <ScrollView>
         <AdminTemplateHeaderPart />
         <View style={styles.container}>
-          <Text style={styles.headerText}>Users</Text>
+          <Text style={styles.headerText}>Withdrawals</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

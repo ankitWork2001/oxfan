@@ -4,7 +4,6 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    Modal,
     TouchableOpacity,
     View,
     SafeAreaView,
@@ -17,166 +16,161 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const DashBoardScreen = () => {
     const inset = useSafeAreaInsets();
-    const [depositFilter, setDepositFilter] = useState('Week');
-    const [withdrawFilter, setWithdrawFilter] = useState('Week');
-    const [dropdownVisible, setDropdownVisible] = useState(null); // 'deposit' | 'withdraw' | null
+    const { height, width } = Dimensions.get('window');
 
-    const filterOptions = ['Day', 'Week', 'Month', 'Year'];
     return (
-        <SafeAreaView>
+        <SafeAreaView style={{ flex: 1 }}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={[styles.scrollViewContent, { padding: inset.bottom }]}
+                contentContainerStyle={[styles.scrollViewContent, { paddingBottom: inset.bottom + 50 }]}
             >
                 <AdminTemplateHeaderPart />
                 <View style={styles.dashboardWrapper}>
+                    <View style={[styles.buttonsContainer, { bottom: height * 0.038 }]}>
+                        <TouchableOpacity style={styles.buttons}>
+                            <Icon name='verified' size={20} color='#34A853' />
+                            <Text style={styles.buttonsText}>Approve{'\n'}Withdrawal</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttons}>
+                            <Icon name='schedule' size={20} color='#FF8800' />
+                            <Text style={styles.buttonsText}>View Today’s{'\n'}Activity</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.buttons}>
+                            <Icon name='add-box' size={20} color='#FF8800' />
+                            <Text style={styles.buttonsText}>Add New{'\n'}Investment</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     <Text style={styles.dashboardTitle}>Dashboard</Text>
 
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        style={styles.horizontalScrollContainer}
-                    >
-                        <View style={[styles.ongoingDashboardCard, { backgroundColor: '#ACE6F1' }]}>
-
-                            <View style={styles.cardContainer}>
-                                <Icon
-                                    name="group"
-                                    size={45}
-                                    color="#007A8A"
-                                />
-                                <View style={styles.textContainer}>
-                                    <Text style={styles.label}>Total Users</Text>
-                                    <Text style={styles.value}>12,432</Text>
+                    <View style={styles.ongoingDashboardCardMainContainer}>
+                        <View style={styles.ongoingDashboardCardContainer}>
+                            <View style={[styles.ongoingDashboardCard, { backgroundColor: '#ACE6F1' }]}>
+                                <View style={styles.cardContainer}>
+                                    <Icon name="group" size={36} color="#007A8A" />
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>Total Users</Text>
+                                        <Text style={styles.value}>12,432</Text>
+                                    </View>
                                 </View>
+                                <Text style={styles.ongoingDashboardCardText}>● +153 new today</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● 9,204 active this week (74%)</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● ↑ 4.2% growth vs last week</Text>
                             </View>
 
+                            <View style={[styles.ongoingDashboardCard, { backgroundColor: '#FBE7A1' }]}>
+                                <View style={styles.cardContainer}>
+                                    <Icon name="upload" size={45} color="#D4A800" />
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>Total Deposits</Text>
+                                        <Text style={styles.value}>$542,100</Text>
+                                    </View>
+                                </View>
+                                <Text style={styles.ongoingDashboardCardText}>● +$12,300 today</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● 1,823 successful deposits this week</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● ↑ 6.7% growth vs last week</Text>
+                            </View>
+                        </View>
 
-                            <Text><Text>●</Text> +153 new today</Text>
-                            <Text><Text>●</Text> 9,204 active this week (74%)</Text>
-                            <Text><Text>●</Text> ↑ 4.2% growth vs last week</Text>
-                        </View>
-                        <View style={[styles.ongoingDashboardCard, { backgroundColor: '#FBE7A1' }]}>
-                            <View style={styles.cardContainer}>
-                                <Icon name="upload" size={45} color="#D4A800" />
-                                <View style={styles.textContainer}>
-                                    <Text style={styles.label}>Total Deposits</Text>
-                                    <Text style={styles.value}>$542,100</Text>
+                        <View style={styles.ongoingDashboardCardContainer}>
+                            <View style={[styles.ongoingDashboardCard, { backgroundColor: '#E9D5FF' }]}>
+                                <View style={styles.cardContainer}>
+                                    <Icon name="download" size={45} color="#8B5CF6" />
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>Total Withdraws</Text>
+                                        <Text style={styles.value}>$342,100</Text>
+                                    </View>
                                 </View>
+                                <Text style={styles.ongoingDashboardCardText}>● $8,100 withdrawn today</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● Pending: $22,450</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● ↓ 1.13% vs last week</Text>
                             </View>
-                            <Text>● +$12,300 today</Text>
-                            <Text>● 1,823 successful deposits this week</Text>
-                            <Text>● ↑ 6.7% growth vs last week</Text>
-                        </View>
-                        <View style={[styles.ongoingDashboardCard, { backgroundColor: '#E9D5FF' }]}>
-                            <View style={styles.cardContainer}>
-                                <Icon name="download" size={45} color="#8B5CF6" />
-                                <View style={styles.textContainer}>
-                                    <Text style={styles.label}>Total Withdraws</Text>
-                                    <Text style={styles.value}>$342,100</Text>
+
+                            <View style={[styles.ongoingDashboardCard, { backgroundColor: '#FBC6C6' }]}>
+                                <View style={styles.cardContainer}>
+                                    <Icon name="group-add" size={45} color="#D94A4A" />
+                                    <View style={styles.textContainer}>
+                                        <Text style={styles.label}>Total Referrals</Text>
+                                        <Text style={styles.value}>2,100</Text>
+                                    </View>
                                 </View>
+                                <Text style={styles.ongoingDashboardCardText}>● +78 new today</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● 1,560 active referrers</Text>
+                                <Text style={styles.ongoingDashboardCardText}>● Top earner: User #1023 ($3,200)</Text>
                             </View>
-                            <Text>● $8,100 withdrawn today</Text>
-                            <Text>● Pending: $22,450</Text>
-                            <Text>● ↓ 1.13% vs last week</Text>
                         </View>
-                        <View style={[styles.ongoingDashboardCard, { backgroundColor: '#FBC6C6' }]}>
-                            <View style={styles.cardContainer}>
-                                <Icon name="group-add" size={45} color="#D94A4A" />
-                                <View style={styles.textContainer}>
-                                    <Text style={styles.label}>Total Referrals</Text>
-                                    <Text style={styles.value}>2,100</Text>
-                                </View>
-                            </View>
-                            <Text>● +78 new today</Text>
-                            <Text>● 1,560 active referrers</Text>
-                            <Text>● Top earner: User #1023 ($3,200)</Text>
-                        </View>
-                    </ScrollView>
+                    </View>
 
                     <Text style={styles.SignupTrendText}>Signup Trend</Text>
-                    <View style={styles.SignupTrendImageContainer}>
-                        <Image
-                            source={require('../assests/signUpTrendImage.png')}
-                            style={styles.SignupTrendImage}
-                        />
-                    </View>
-                    <View style={styles.buttonRow}>
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#3366CC' }]}>
-                            <Text style={styles.buttonText}>Approve Withdrawals</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#EA5C49' }]}>
-                            <Text style={styles.buttonText}>Add New Investment Plan</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={[styles.button, { backgroundColor: '#007A8A' }]}>
-                            <Text style={styles.buttonText}>View Today’s Activity</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View>
-                        <View style={styles.sectionHeader}>
-                            <Text style={styles.SignupTrendText}>Deposits</Text>
-                            <TouchableOpacity
-                                style={styles.dropdownButton}
-                                onPress={() => setDropdownVisible(dropdownVisible === 'deposit' ? null : 'deposit')}
-                            >
-                                <Text>{depositFilter} ▼</Text>
-                            </TouchableOpacity>
+                    <View style={styles.SignupTrendImageMainContainer}>
+                        <View style={styles.TextContainer}>
+                            <Text style={styles.TextHeader}>Users</Text>
+                            <Text style={styles.TextValues}>80</Text>
+                            <Text style={styles.TextValues}>60</Text>
+                            <Text style={styles.TextValues}>40</Text>
+                            <Text style={styles.TextValues}>20</Text>
+                            <Text style={styles.TextValues}>0</Text>
                         </View>
 
-                        <View style={styles.SignupTrendImageContainer}>
+                        <View style={[styles.SignupTrendImageContainer, { left: width * 0.01 }]}>
                             <Image
-                                source={require('../assests/DepositGraphImage.png')}
+                                source={require('../assests/signUpTerndImageDays.png')}
+                                style={styles.SignupTrendImageDays}
+                            />
+                            <Image
+                                source={require('../assests/signUpTrendImage.png')}
                                 style={styles.SignupTrendImage}
                             />
+                            <View style={[styles.TextTimeContainer, { bottom: height * 0.01 }]}>
+                                <Text style={styles.TextValues}>11 am</Text>
+                                <Text style={styles.TextValues}>12 pm</Text>
+                                <Text style={styles.TextValues}>1 pm</Text>
+                                <Text style={styles.TextValues}>2 pm</Text>
+                                <Text style={styles.TextValues}>3 pm</Text>
+                            </View>
+                            <Text style={[styles.TextHeader, { right: width * 0.14 }]}>Time -></Text>
+                        </View>
+                    </View>
+                    <Text style={styles.SignupTrendText}>Investment Plan Usage</Text>
+
+                    <View style={styles.card}>
+                        {/* Left Side: Legend */}
+                        <View style={styles.legendContainer}>
+                            <View style={styles.legendItem}>
+                                <View style={[styles.colorBox, { backgroundColor: '#34A853' }]} />
+                                <View>
+                                    <Text style={styles.label}>Basic Plan</Text>
+                                    <Text style={styles.percentage}>45%</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.legendItem}>
+                                <View style={[styles.colorBox, { backgroundColor: '#F4B400' }]} />
+                                <View>
+                                    <Text style={styles.label}>Gold Plan</Text>
+                                    <Text style={styles.percentage}>20%</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.legendItem}>
+                                <View style={[styles.colorBox, { backgroundColor: '#A259FF' }]} />
+                                <View>
+                                    <Text style={styles.label}>Premium Plan</Text>
+                                    <Text style={styles.percentage}>35%</Text>
+                                </View>
+                            </View>
                         </View>
 
-                        <View style={styles.sectionHeader}>
-                            <Text style={styles.SignupTrendText}>Withdrawals</Text>
-                            <TouchableOpacity
-                                style={styles.dropdownButton}
-                                onPress={() => setDropdownVisible(dropdownVisible === 'withdraw' ? null : 'withdraw')}
-                            >
-                                <Text>{withdrawFilter} ▼</Text>
-                            </TouchableOpacity>
-                        </View>
-
-                        <View style={styles.SignupTrendImageContainer}>
+                        {/* Right Side: Static Pie Chart Image */}
+                        <View style={styles.chartImageContainer}>
                             <Image
-                                source={require('../assests/WithdrawalGraphImage.png')}
-                                style={styles.SignupTrendImage}
+                                source={require('../assests/investment_plan_pie_chart.png')}
+                                style={[styles.chartImage, { right: width * 0.15 }]}
                             />
                         </View>
-
-                        {dropdownVisible && (
-                            <Modal transparent animationType="fade" visible={true} onRequestClose={() => setDropdownVisible(null)}>
-                                <TouchableOpacity
-                                    style={styles.modalOverlay}
-                                    onPress={() => setDropdownVisible(null)}
-                                    activeOpacity={1}
-                                >
-                                    <View style={styles.dropdown}>
-                                        {filterOptions.map((option, index) => (
-                                            <TouchableOpacity
-                                                key={index}
-                                                style={styles.option}
-                                                onPress={() => {
-                                                    if (dropdownVisible === 'deposit') setDepositFilter(option);
-                                                    else if (dropdownVisible === 'withdraw') setWithdrawFilter(option);
-                                                    setDropdownVisible(null);
-                                                }}
-                                            >
-                                                <Text>{option}</Text>
-                                            </TouchableOpacity>
-                                        ))}
-                                    </View>
-                                </TouchableOpacity>
-                            </Modal>
-                        )}
                     </View>
                 </View>
-            </ScrollView >
+            </ScrollView>
         </SafeAreaView>
     );
 };
@@ -187,12 +181,24 @@ const styles = StyleSheet.create({
     scrollViewContent: {
         backgroundColor: '#fff',
     },
+    buttonsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around'
+    },
+    buttons: {
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        padding: 10,
+        borderRadius: 6,
+        elevation: 6,
+        width: 90
+    },
+    buttonsText: {
+        textAlign: 'center'
+    },
     dashboardWrapper: {
         paddingHorizontal: 16,
-        backgroundColor: '#F3F3F3',
-        padding: 30,
-        margin: 20,
-        borderRadius: 6
+        backgroundColor: '#fff',
     },
     dashboardTitle: {
         fontSize: RFValue(18),
@@ -203,15 +209,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginTop: 40
     },
-    horizontalScrollContainer: {
-
+    ongoingDashboardCardMainContainer: {},
+    ongoingDashboardCardContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around'
     },
     ongoingDashboardCard: {
-        width: 203,
+        width: 160,
         borderRadius: 6,
         padding: 15,
         marginVertical: 10,
-        marginHorizontal: 20,
         shadowRadius: 4,
         elevation: 5,
         shadowColor: '#000',
@@ -227,82 +234,117 @@ const styles = StyleSheet.create({
     },
     label: {
         color: '#000',
-        fontSize: RFValue(12),
-        fontWeight: 400
+        fontSize: RFValue(10),
+        fontWeight: '400'
     },
     value: {
         color: '#000',
-        fontSize: RFValue(18),
-        fontWeight: 400
+        fontSize: RFValue(14),
+        fontWeight: '400'
+    },
+    ongoingDashboardCardText: {
+        fontSize: RFValue(8)
+    },
+    SignupTrendImageMainContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        marginTop: 20,
+        backgroundColor: '#fff',
+        paddingTop: 10,
+        paddingLeft: 25,
+        overflow: 'hidden',
+        borderRadius: 12,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
     },
     SignupTrendImageContainer: {
-        backgroundColor: "#fff",
-        width: Dimensions.get('window').width * 0.8,
-        height: 190,
+        width: Dimensions.get('window').width * 0.9,
+        height: 200,
         justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: 20
     },
     SignupTrendImage: {
-        width: '100%',
-        height: '100%',
+        width: '80%',
+        height: '70%',
         resizeMode: 'contain'
     },
-    buttonRow: {
-        padding: 16,
-        backgroundColor: '#F5F5F5',
-        gap: 20
+    SignupTrendImageDays: {
+        width: '80%',
+        resizeMode: 'contain'
     },
-    button: {
-        paddingVertical: 12,
-        paddingHorizontal: 16,
-        borderRadius: 8,
-        minWidth: Dimensions.get('window').width / 3 - 16,
-        alignItems: 'center',
+    TextContainer: {
+        gap: 8,
+        marginBottom: 15
     },
-    buttonText: {
-        color: '#fff',
-        fontWeight: '500',
-        fontSize: 14,
-    },
-    sectionHeader: {
+    TextTimeContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
-        marginTop: 40,
+        width: '80%'
     },
-
-    dropdownButton: {
-        width: 71,
-        height: 24,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        justifyContent: 'center',
+    TextHeader: {
+        color: '#8F8F8F',
+        fontSize: RFValue(12),
+        fontWeight: '300',
+        textAlign: 'center'
+    },
+    TextValues: {
+        color: '#8F8F8F',
+        fontSize: RFValue(10),
+        fontWeight: '400'
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: '600',
+        marginBottom: 12,
+    },
+    card: {
+        flexDirection: 'row',
+        backgroundColor: '#fff',
+        padding: 16,
+        marginTop: 20,
+        borderRadius: 12,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        shadowOffset: { width: 0, height: 3 },
+        justifyContent: 'space-between',
         alignItems: 'center',
+    },
+    legendContainer: {
+        gap: 20,
+    },
+    legendItem: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+    },
+    colorBox: {
+        width: 18,
+        height: 18,
         borderRadius: 4,
-        backgroundColor: '#fff',
-        marginTop: 35
     },
-
-    modalOverlay: {
-        flex: 1,
+    label: {
+        fontSize: 14,
+        fontWeight: '500',
+        color: '#000',
+    },
+    percentage: {
+        fontSize: 13,
+        fontWeight: '400',
+        color: '#000',
+    },
+    chartImageContainer: {
+        width: Dimensions.get('window').width * 1,
+        height: 160,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0,0,0,0.2)',
     },
-
-    dropdown: {
-        width: 120,
-        backgroundColor: '#fff',
-        borderRadius: 6,
-        paddingVertical: 6,
-        elevation: 5,
-        marginTop: 60,
-    },
-
-    option: {
-        padding: 10,
-        borderBottomWidth: 0.5,
-        borderBottomColor: '#ddd',
+    chartImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
     },
 });

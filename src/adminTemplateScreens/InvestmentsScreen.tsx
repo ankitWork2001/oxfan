@@ -34,7 +34,7 @@ const InvestmentsScreen = () => {
       <ScrollView>
         <AdminTemplateHeaderPart />
         <View style={styles.container}>
-          <Text style={styles.headerText}>Users</Text>
+          <Text style={styles.headerText}>Investments</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

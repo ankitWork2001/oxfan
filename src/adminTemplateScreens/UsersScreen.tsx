@@ -4,11 +4,11 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  View
+  View,
+  TextInput
 } from 'react-native'
 import AdminTemplateHeaderPart from '../components/AdminTemplateHeaderPart'
 import { RFValue } from 'react-native-responsive-fontsize'
-import { TextInput } from 'react-native-gesture-handler'
 
 const users = new Array(8).fill({
   userId: 'UU01',
@@ -77,7 +77,7 @@ const UsersScreen = () => {
   )
 }
 
-export default UsersScreen
+export default UsersScreen;
 
 const styles = StyleSheet.create({
   container: {

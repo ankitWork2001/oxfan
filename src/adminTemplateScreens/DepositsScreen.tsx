@@ -32,7 +32,7 @@ const DepositsScreen = () => {
       <ScrollView>
         <AdminTemplateHeaderPart />
         <View style={styles.container}>
-          <Text style={styles.headerText}>Users</Text>
+          <Text style={styles.headerText}>Deposits</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}

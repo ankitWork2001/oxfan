@@ -30,7 +30,7 @@ const SpinLogsScreen = () => {
       <ScrollView>
         <AdminTemplateHeaderPart />
         <View style={styles.container}>
-          <Text style={styles.headerText}>Users</Text>
+          <Text style={styles.headerText}>Spin Logs</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
