@@ -8,6 +8,7 @@ import {
     StyleSheet,
     TouchableWithoutFeedback,
     Dimensions,
+    Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -53,29 +54,42 @@ const AdminTemplateHeaderPart = () => {
                     <View style={styles.overlay}>
                         <TouchableWithoutFeedback>
                             <View style={styles.menu}>
-                                <TouchableOpacity onPress={() => handleNavigate('Home')}>
+                                <View style={styles.MenuItemImageContainer}>
+                                    <Image
+                                        source={require('../assests/MenuHeadIcon.png')}
+                                        style={styles.MenuItemImage}
+                                    />
+                                </View>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Home')}>
+                                    <Icon name='dashboard' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Dashboard</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleNavigate('Users')}>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Users')}>
+                                    <Icon name='people' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Users</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleNavigate('Investments')}>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Investments')}>
+                                    <Icon name='work' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Investments</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleNavigate('SpinLogs')}>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('SpinLogs')}>
+                                    <Icon name='autorenew' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Spin Logs</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleNavigate('Deposits')}>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Deposits')}>
+                                    <Icon name='file-upload' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Deposits</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleNavigate('Withdrawals')}>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Withdrawals')}>
+                                    <Icon name='file-download' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Withdrawals</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handleNavigate('Settings')}>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Settings')}>
+                                    <Icon name='settings' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Settings</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => console.log('Log Out')}>
-                                    <Text style={styles.menuItem}>Log Out</Text>
+                                <TouchableOpacity style={styles.menuLogoutButton} onPress={() => console.log('Log Out')}>
+                                    <Text style={styles.menuLogoutButtonText}>Log Out</Text>
                                 </TouchableOpacity>
                             </View>
                         </TouchableWithoutFeedback>
@@ -142,9 +156,37 @@ const styles = StyleSheet.create({
         width: 200,
         elevation: 5,
     },
+    MenuItemImageContainer: {
+        width: 32,
+        height: 32,
+        marginLeft: 65,
+        marginVertical: 10
+    },
+    MenuItemImage: {
+        width: "100%",
+        height: "100%",
+        resizeMode: 'contain'
+    },
+    menuButtons: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10
+    },
     menuItem: {
         fontSize: 16,
         paddingVertical: 10,
         color: '#333',
+    },
+    menuLogoutButton: {
+        marginVertical: 15,
+        backgroundColor: '#D9D9D9',
+        borderRadius:6
+    },
+    menuLogoutButtonText: {
+        fontSize: 16,
+        paddingVertical: 10,
+        color: '#000',
+        textAlign: 'center',
+        fontWeight:'500'
     },
 });
