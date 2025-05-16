@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import AdminTemplateHeaderPart from '../components/AdminTemplateHeaderPart'
 
-const SettingsScreen = () => {
+const AdminSettingsScreen = () => {
   return (
     <View>
       <AdminTemplateHeaderPart/>
@@ -11,6 +11,6 @@ const SettingsScreen = () => {
   )
 }
 
-export default SettingsScreen
+export default AdminSettingsScreen
 
 const styles = StyleSheet.create({})
