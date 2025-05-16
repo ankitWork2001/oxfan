@@ -88,6 +88,8 @@ const HomeScreen = () => {
                                 <Icon name='attach-money' size={30} color='skyblue' />
                             </View>
                             <View>
+
+                                
                                 <Text style={styles.todayLabel}>Active Investment</Text>
                                 <Text>Gold Plan | 2.5% Daily | Active</Text>
                             </View>
