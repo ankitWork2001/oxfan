@@ -24,7 +24,7 @@ const DashBoardScreen = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={[styles.scrollViewContent, { paddingBottom: inset.bottom + 50 }]}
             >
-                <AdminTemplateHeaderPart />
+                <AdminTemplateHeaderPart name='Hii Rohan,' />
                 <View style={styles.dashboardWrapper}>
                     <View style={[styles.buttonsContainer, { bottom: height * 0.038 }]}>
                         <TouchableOpacity style={styles.buttons}>
