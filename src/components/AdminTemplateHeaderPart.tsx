@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
 
-const AdminTemplateHeaderPart = () => {
+const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
     const [menuVisible, setMenuVisible] = useState(false);
     const navigation = useNavigation();
     const { height } = Dimensions.get('window');
@@ -27,8 +27,8 @@ const AdminTemplateHeaderPart = () => {
 
     return (
         <SafeAreaView>
-            <View style={styles.headerContainer}>
-                <Text style={styles.greetingText}>Hello Rohan,</Text>
+            <View style={[styles.headerContainer, { paddingBottom }]}>
+                <Text style={styles.greetingText}>{name}</Text>
 
                 <View style={styles.iconGroup}>
                     <View style={styles.searchContainer}>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: '#34A853',
         paddingHorizontal: 16,
-        paddingVertical: 40,
+        paddingTop: 40,
     },
     greetingText: {
         fontSize: RFValue(20),
@@ -180,13 +180,13 @@ const styles = StyleSheet.create({
     menuLogoutButton: {
         marginVertical: 15,
         backgroundColor: '#D9D9D9',
-        borderRadius:6
+        borderRadius: 6
     },
     menuLogoutButtonText: {
         fontSize: 16,
         paddingVertical: 10,
         color: '#000',
         textAlign: 'center',
-        fontWeight:'500'
+        fontWeight: '500'
     },
 });

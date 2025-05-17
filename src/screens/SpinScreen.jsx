@@ -59,12 +59,14 @@ const SpinScreen = () => {
               resizeMode='contain'
             />
             <Text style={{ fontSize: RFValue(36), fontWeight: 'bold', color: '#FF8800', marginBottom: 10 }}>Lucky Spin Star!</Text>
-            <Text style={{ fontSize: RFValue(22), fontWeight: 400, marginBottom: 10 }}>You’ve Won A Gift Pack</Text>
+            <Text style={{ fontSize: RFValue(22), fontWeight: '400', marginBottom: 10 }}>You’ve Won A Gift Pack</Text>
             <Text style={{ fontSize: RFValue(12), marginBottom: 10 }}>Spin Now For Another Win!</Text>
 
             <Icon name='keyboard-double-arrow-down' size={24} color="orange" style={{ marginBottom: 10 }} />
 
-            <TouchableOpacity onPress={() => setShowModal(false)}>
+            <View style={{ flex: 1 }} />
+
+            <TouchableOpacity style={[styles.signInButton, { top: height * 0.31 }]} onPress={() => setShowModal(false)}>
               <Text style={styles.signInButtonText}>Spin Now</Text>
             </TouchableOpacity>
           </View>
@@ -134,7 +136,9 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: '80%',
+    height: 350, // give a fixed height
     alignItems: 'center',
+    justifyContent: 'space-between', // <--- THIS
   },
   modalButton: {
     backgroundColor: 'green',

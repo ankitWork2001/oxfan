@@ -32,9 +32,8 @@ const InvestmentsScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <ScrollView>
-        <AdminTemplateHeaderPart />
+        <AdminTemplateHeaderPart name='Investments' paddingBottom={20}/>
         <View style={styles.container}>
-          <Text style={styles.headerText}>Investments</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -76,12 +75,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F3",
     margin: 10,
     borderRadius: 6
-  },
-  headerText: {
-    fontSize: RFValue(18),
-    fontWeight: 'bold',
-    marginVertical:15,
-    marginBottom:25
   },
   HorizentalScrollContainer: {
     backgroundColor: '#fff',

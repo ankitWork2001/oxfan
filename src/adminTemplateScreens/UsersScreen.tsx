@@ -31,15 +31,8 @@ const UsersScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <ScrollView>
-        <AdminTemplateHeaderPart />
+        <AdminTemplateHeaderPart name='Users' paddingBottom={20}/>
         <View style={styles.container}>
-          <Text style={styles.headerText}>Users</Text>
-
-          <TextInput
-            style={styles.searchInput}
-            placeholderTextColor='black'
-            placeholder="Search users..."
-          />
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -85,19 +78,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F3F3",
     margin: 10,
     borderRadius: 6
-  },
-  headerText: {
-    fontSize: RFValue(18),
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  searchInput: {
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
   },
   HorizentalScrollContainer: {
     backgroundColor: '#fff',
