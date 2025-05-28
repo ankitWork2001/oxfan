@@ -1,116 +1,211 @@
-import { View, Text, StyleSheet, SafeAreaView, TextInput, TouchableOpacity, Dimensions, Image } from 'react-native'
-import React from 'react'
-import SignInLoginHeadPart from '../components/SignInLoginHeadPart';
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import {
+    View,
+    Text,
+    StyleSheet,
+    SafeAreaView,
+    TextInput,
+    TouchableOpacity,
+    Dimensions,
+    Image,
+    Alert,
+    ScrollView,
+    ActivityIndicator
+} from 'react-native';
+import React, { useState } from 'react';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
+import { signInUser } from '../store/features/auth/authThunk';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
+const { height, width } = Dimensions.get('window');
 
-const SignInScreen = () => {
-    const { height, width } = Dimensions.get('window');
+const SignInScreen: React.FC = () => {
+    const [email, setEmail] = useState<string>('');
+    const [mobile, setMobile] = useState<string>('');
+    const [username, setUsername] = useState<string>('');
+    const [name, setName] = useState<string>('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [password, setPassword] = useState<string>('');
+    const [loading, setLoading] = useState(false); // Add loading state
+    const dispatch = useDispatch<AppDispatch>();
+    const { error } = useSelector((state: RootState) => state.auth);
+    const navigation = useNavigation<NavigationProp<any>>();
+
+    const handleSignin = async () => {
+        if (!name || !email || !password || !mobile) {
+            return Alert.alert('Error', 'Please enter all credentials');
+        }
+        console.log("Signing in with:", { username, name, email, password, mobile }); // Debugging log
+        setLoading(true);
+        try {
+            // Use unwrap to get the result or throw an error
+            await dispatch(signInUser({ username, name, email, password, mobile })).unwrap();
+            navigation.navigate('Login');
+            Alert.alert('SignUp Successfull');
+        } catch (err) {
+            console.error("Sign In Error:", err); // Log the error for debugging
+            Alert.alert("Sign Up Failed", err.message || 'Sign Up failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     return (
         <SafeAreaView style={styles.container}>
-            <SafeAreaView>
-                <View style={styles.mainContainer}>
-                    <View>
+            <ScrollView>
+                <SafeAreaView>
+                    <View style={styles.mainContainer}>
                         <Image
                             source={require('../assests/loginSiginBacckgroundImage.png')}
                             style={styles.image}
                         />
-                    </View>
-                    <View>
                         <Image
                             style={[styles.image, { top: height * -0.45 }]}
-                            source={require("../assests/leftCoins.png")}
+                            source={require('../assests/leftCoins.png')}
                         />
                         <Image
                             style={[styles.image, { top: height * -0.75, left: width * 0.4 }]}
-                            source={require("../assests/rightCoins.png")}
+                            source={require('../assests/rightCoins.png')}
                         />
-                    </View>
-                    <View style={[styles.loginAndCreateAccountContainer, { top: height * 0.09 }]}>
-                        <View style={styles.loginArrowBackContain}>
-                            <TouchableOpacity>
-                                <Icon style={styles.BackIcon} name='arrow-back' size={20} color="#000000" />
-                            </TouchableOpacity>
-                            <Text style={styles.loginText}>Sign In</Text>
+                        <View style={[styles.loginAndCreateAccountContainer, { top: height * 0.09 }]}>
+                            <View style={styles.loginArrowBackContain}>
+                                <TouchableOpacity
+                                    onPress={() => navigation.goBack()}
+                                >
+                                    <Icon
+                                        style={styles.BackIcon}
+                                        name="arrow-back"
+                                        size={20}
+                                        color="#000000"
+                                    />
+                                </TouchableOpacity>
+                                <Text style={styles.loginText}>Sign Up</Text>
+                            </View>
                         </View>
-                        <View style={styles.loginArrowBackContain}>
-                            <TouchableOpacity style={styles.createAccountButton}>
-                                <Text style={styles.createNewText}>Create New Account</Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
-                </View>
-            </SafeAreaView>
-            <View style={styles.body}>
-                <Text style={styles.welcomeText}>WellCome!</Text>
+                </SafeAreaView>
 
-                <Text style={styles.label}>E-Mail Address / Phone Number</Text>
-                <TextInput style={styles.input} />
+                <View style={styles.body}>
+                    <Text style={styles.welcomeText}>Welcome!</Text>
 
-                <Text style={styles.label}>OTP</Text>
-                <View style={styles.passwordContainer}>
-                    <TextInput style={styles.inputPassword} />
-                    <TouchableOpacity>
-                        <Icon
-                            style={[styles.icon, { right: width * 0.01, top: height * 0.008 }]}
-                            name="visibility"
-                            size={18}
-                            color="#000"
+                    <Text style={styles.label}>User Name</Text>
+                    <TextInput
+                        placeholder="username"
+                        onChangeText={setUsername}
+                        value={username}
+                        style={styles.input}
+                        autoCapitalize="words"
+                    />
+
+                    <Text style={styles.label}>Name</Text>
+                    <TextInput
+                        placeholder="Name"
+                        onChangeText={setName}
+                        value={name}
+                        style={styles.input}
+                        autoCapitalize="words"
+                    />
+
+                    <Text style={styles.label}>E-Mail Address</Text>
+                    <TextInput
+                        placeholder="Email"
+                        onChangeText={setEmail}
+                        value={email}
+                        style={styles.input}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                    <Text style={styles.label}>Mobile</Text>
+                    <TextInput
+                        placeholder="Mobile"
+                        onChangeText={setMobile}
+                        value={mobile}
+                        style={styles.input}
+                        keyboardType="number-pad"
+                    />
+
+                    <Text style={styles.label}>Password</Text>
+                    <View style={styles.passwordContainer}>
+                        <TextInput
+                            onChangeText={setPassword}
+                            value={password}
+                            style={styles.inputPassword}
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            secureTextEntry={!showPassword}
                         />
+                        <TouchableOpacity
+                            onPress={() => setShowPassword(prev => !prev)}
+                        >
+                            <Icon
+                                style={[styles.icon, { right: width * 0.01, top: height * 0.008 }]}
+                                name={showPassword ? "visibility-off" : "visibility"}
+                                size={18}
+                                color="#000"
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    <TouchableOpacity style={styles.forgotPassword}>
+                        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
                     </TouchableOpacity>
+
+                    <TouchableOpacity onPress={handleSignin} style={styles.loginButton} disabled={loading}>
+                        {loading ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.loginButtonText}>Sign Up</Text>
+                        )}
+                    </TouchableOpacity>
+
+                    <Text style={styles.orText}>Or</Text>
+
+                    <View style={styles.dividerContainer}>
+                        <View style={styles.divider} />
+                        <Text style={styles.loginWith}>Log In With</Text>
+                        <View style={styles.divider} />
+                    </View>
+
+                    <View style={styles.socialIconContainer}>
+                        <TouchableOpacity style={styles.button}>
+                            <Image
+                                style={styles.socialIcon}
+                                source={require('../assests/googleLogo.png')}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button}>
+                            <Image
+                                style={styles.socialIcon}
+                                source={require('../assests/appleLogo.png')}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.button}>
+                            <Image
+                                style={styles.socialIcon}
+                                source={require('../assests/facebookLogo.png')}
+                            />
+                        </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.signUpPrompt}>
+                        Already Have an Account?
+                        <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                            <Text style={styles.signInLink}> Log In</Text>
+                        </TouchableOpacity>
+                    </Text>
                 </View>
-                <TouchableOpacity style={styles.forgotPassword}>
-                    <Text style={styles.forgotPasswordText}>Forgot Password ?</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity style={styles.loginButton}>
-                    <Text style={styles.loginButtonText}>Sign In</Text>
-                </TouchableOpacity>
-
-                <Text style={styles.orText}>Or</Text>
-
-                <View style={styles.dividerContainer}>
-                    <View style={styles.divider} />
-                    <Text style={styles.loginWith}>Log In With</Text>
-                    <View style={styles.divider} />
-                </View>
-
-                <View style={styles.socialIconContainer}>
-                    <TouchableOpacity style={styles.button}>
-                        <Image
-                            style={styles.socialIcon}
-                            source={require('../assests/googleLogo.png')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
-                        <Image
-                            style={styles.socialIcon}
-                            source={require('../assests/appleLogo.png')}
-                        />
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}>
-                        <Image
-                            style={styles.socialIcon}
-                            source={require('../assests/facebookLogo.png')}
-                        />
-                    </TouchableOpacity>
-                </View>
-
-                <Text style={styles.signUpPrompt}>
-                    Already Have an Account?
-                    <TouchableOpacity>
-                        <Text style={styles.signInLink}> Log In</Text>
-                    </TouchableOpacity>
-                </Text>
-            </View>
+            </ScrollView>
         </SafeAreaView>
-    )
-}
+    );
+};
+
+export default SignInScreen;
+
 
 const styles = StyleSheet.create({
-
     mainContainer: {
         width: "100%",
         height: Dimensions.get("window").height * 0.35,
@@ -120,7 +215,6 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
     },
     loginAndCreateAccountContainer: {
-        display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
         position: 'absolute',
@@ -128,7 +222,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20
     },
     loginArrowBackContain: {
-        display: 'flex',
         flexDirection: "row",
         alignItems: "center",
         gap: 10,
@@ -139,25 +232,11 @@ const styles = StyleSheet.create({
     },
     loginText: {
         fontSize: RFValue(20),
-        fontWeight: 400,
+        fontWeight: '400',
         color: "#FFFFFF"
     },
-    createAccountButton: {
-        alignItems: 'center',
-        backgroundColor: "#FF8800",
-        padding: 5,
-        borderRadius: 4,
-        elevation: 6,
-    },
-    createNewText: {
-        color: "#FFFFFF",
-        fontSize: RFValue(9),
-    },
-
     container: {
-        // flex: 1,
         backgroundColor: '#fff',
-
     },
     body: {
         padding: 30,
@@ -186,7 +265,6 @@ const styles = StyleSheet.create({
         marginBottom: 15
     },
     passwordContainer: {
-        display: 'flex',
         flexDirection: 'row',
     },
     inputPassword: {
@@ -196,7 +274,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 8,
         marginBottom: 15,
-        width: "100%"
+        flex: 1,
+        color: '#000'
     },
     icon: {
         position: 'absolute',
@@ -219,14 +298,14 @@ const styles = StyleSheet.create({
         color: '#fff',
         textAlign: 'center',
         fontSize: RFValue(14),
-        fontWeight: 400
+        fontWeight: '400'
     },
     orText: {
         textAlign: 'center',
         marginTop: 25,
         marginBottom: 10,
         fontSize: RFValue(12),
-        fontWeight: 600,
+        fontWeight: '600',
     },
     dividerContainer: {
         flexDirection: 'row',
@@ -268,9 +347,6 @@ const styles = StyleSheet.create({
     },
     signInLink: {
         color: "green",
-        fontWeight: 600
+        fontWeight: '600'
     }
-
 });
-
-export default SignInScreen

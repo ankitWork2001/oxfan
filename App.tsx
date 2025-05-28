@@ -9,18 +9,25 @@ import { NavigationContainer } from '@react-navigation/native'
 // import TabNavigator from './src/navigations/TabNavigator' 
 import AppNavigator from './src/navigations/AppNavigator'
 import Spinwheele from './src/screens/spinwheele'
+import { Provider } from 'react-redux'
+import store from './src/store/store'
+
 
 const App = () => {
   return (
     <AppNavigator />
 
     // <View>
-    //   <Spinwheele />
+    //   {/* <Spinwheele /> */}
 
     //   {/* <LandingScreen /> */}
     //   {/* <WelcomeScreen /> */}
     //   {/* <LoginScreen /> */}
-    //   {/* <SignInScreen /> */}
+    //   <Provider store={store}>
+    //     <NavigationContainer>
+    //       <SignInScreen />
+    //     </NavigationContainer>
+    //   </Provider>
 
     // </View>
   )
