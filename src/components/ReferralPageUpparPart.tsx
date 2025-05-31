@@ -1,15 +1,36 @@
-import { Dimensions, Image, ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import { Dimensions, Image, ImageBackground, SafeAreaView, ScrollView, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { useDispatch } from 'react-redux';
+import { fetchReferralCode } from '../store/features/refferal/refferalThunk';
+import { AppDispatch } from '../store/store';
+import Clipboard from '@react-native-clipboard/clipboard';
 
 const ReferralPageUpparPart = () => {
     const insets = useSafeAreaInsets();
     const { height } = Dimensions.get('window');
+    const [referralCode, setReferralCode] = useState('');
+    const dispatch = useDispatch<AppDispatch>();
+    useEffect(() => {
+        dispatch(fetchReferralCode())
+            .unwrap()
+            .then((data) => {
+                setReferralCode(data.code);
+            })
+            .catch((error) => {
+                console.error('❌ Error fetching referral code:', error);
+            });
+    }, [dispatch])
+
+    const copyToClipboard = () => {
+        Clipboard.setString(referralCode);
+        ToastAndroid.show('Copied to Clipboard!', ToastAndroid.SHORT); 
+    };
     return (
         <SafeAreaView style={styles.MainContainer}>
             <ScrollView
-                contentContainerStyle={{ flexGrow: 1}}
+                contentContainerStyle={{ flexGrow: 1 }}
                 showsVerticalScrollIndicator={false}
             >
                 <View style={{ height: 525 }}>
@@ -28,9 +49,9 @@ const ReferralPageUpparPart = () => {
                         <View style={[styles.wrapper, { bottom: height * 0.03 }]}>
                             <View style={styles.couponContainer}>
                                 <View style={styles.codeSection}>
-                                    <Text style={styles.codeText}>ROHAN2025</Text>
+                                    <Text style={styles.codeText}>{referralCode}</Text>
                                 </View>
-                                <TouchableOpacity style={styles.copySection}>
+                                <TouchableOpacity onPress={copyToClipboard} style={styles.copySection}>
                                     <Text style={styles.copyText}>COPY</Text>
                                 </TouchableOpacity>
                             </View>

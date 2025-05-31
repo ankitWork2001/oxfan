@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getPlans, fetchActiveInvestments } from "./investmentThunk";
+import { getPlans, fetchActiveInvestments, fetchInvestmentsHistory } from "./investmentThunk";
 
 const investmentSlice = createSlice({
     name: "investment",
@@ -14,13 +14,16 @@ const investmentSlice = createSlice({
         activeLoading: false,
         activeError: null,
 
+        // Active Investments
+        investmentsHistory: [],
+        historyLoading: false,
+        historyError: null,
+
         // General loading/error (optional)
         loading: false,
         error: null
     },
-    reducers: {
-        // You can add synchronous reducers here if needed
-    },
+    reducers: {},
     extraReducers: (builder) => {
         builder
             // Handle getPlans actions
@@ -57,6 +60,24 @@ const investmentSlice = createSlice({
                 state.activeError = action.payload || "Failed to fetch active investments";
                 state.loading = false; // Optional general loading
                 state.error = action.payload || "Failed to fetch active investments"; // Optional general error
+            })
+
+            // Handle fetchInvestmentsHistory actions
+            .addCase(fetchInvestmentsHistory.pending, (state) => {
+                state.historyLoading = true;
+                state.historyError = null;
+                state.loading = true; 
+            })
+            .addCase(fetchInvestmentsHistory.fulfilled, (state, action) => {
+                state.historyLoading = false;
+                state.investmentsHistory = action.payload;
+                state.loading = false; 
+            })
+            .addCase(fetchInvestmentsHistory.rejected, (state, action) => {
+                state.historyLoading = false;
+                state.historyError = action.payload || "Failed to fetch investments history";
+                state.loading = false;
+                state.error = action.payload || "Failed to fetch investments history"; 
             });
     },
 });

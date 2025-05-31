@@ -16,6 +16,7 @@ import {
 import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 
 interface ImageItem {
     id: string;
@@ -34,6 +35,7 @@ const HomeScreen: React.FC = () => {
     const insets = useSafeAreaInsets();
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList<ImageItem>>(null);
+    const navigation = useNavigation();
 
     return (
         <ScrollView contentContainerStyle={[styles.scrollViewContent, { paddingBottom: insets.bottom + 100 }]}>
@@ -88,11 +90,11 @@ const HomeScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.IconMainContaineer}>
-                        <TouchableOpacity style={styles.IconContaineer}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Deposit')} style={styles.IconContaineer}>
                             <Icon name='upload' size={26} color='#FFFFFF' />
                             <Text style={styles.IconText}>DEPOSIT</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.IconContaineer}>
+                        <TouchableOpacity onPress={() => { navigation.navigate('Withdraw') }} style={styles.IconContaineer}>
                             <Icon name='download' size={26} color='#FFFFFF' />
                             <Text style={styles.IconText}>WITHDRAW</Text>
                         </TouchableOpacity>
