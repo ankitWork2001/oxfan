@@ -1,12 +1,42 @@
 import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchActiveInvestments, getPlans } from '../store/features/investment/investmentThunk';
+import { AppDispatch, RootState } from '../store/store';
 
 const InvestScreen = () => {
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { activeInvestments, investmentPlans, plansLoading, plansError } = useSelector(
+    (state: RootState) => state.investment
+  );
+
+  useEffect(() => {
+    dispatch(fetchActiveInvestments())
+      .unwrap()
+      .then((res) => {
+        console.log('Fetched Active Investments:', res);
+      })
+      .catch((err) => {
+        console.log('Error fetching investments:', err);
+      });
+
+    dispatch(getPlans())
+      .unwrap()
+      .then((res) => {
+        console.log('Fetched Plans:', res);
+      })
+      .catch((err) => {
+        console.log('Error fetching plans:', err);
+      });
+  }, [dispatch]);
+
+
   return (
     <SafeAreaView style={styles.MainContainer}>
       <ScrollView
@@ -20,84 +50,57 @@ const InvestScreen = () => {
               <Icon name='notifications' size={20} color='#fff' />
             </TouchableOpacity>
           </View>
-          <View style={styles.card}>
-            <View style={[styles.borderBar, { backgroundColor: '#2E7D32', }]} />
-            <View style={styles.content}>
-              <View style={styles.textSection}>
-                <View style={styles.titleRow}>
-                  <Icon name="schedule" size={14} color="#2E7D32" />
-                  <Text style={styles.title}> Basic Plan</Text>
+          {plansLoading ? (
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>Loading plans...</Text>
+          ) : plansError ? (
+            <Text style={{ textAlign: 'center', color: 'red', marginTop: 20 }}>{plansError}</Text>
+          ) : Array.isArray(investmentPlans) && investmentPlans.length > 0 ? (
+            investmentPlans.map((plan, index) => {
+              const planNameLower = plan.name?.toLowerCase() || '';
+
+              const planColor =
+                planNameLower.includes('gold') ? '#FDBE00' :
+                  planNameLower.includes('premium') ? '#9747FF' :
+                    planNameLower.includes('starter') ? '#0077FF' :
+                      '#2E7D32'; // default color
+
+              const planImage =
+                planNameLower.includes('gold') ? require('../assests/InvetManGoldPlanImage.png') :
+                  planNameLower.includes('premium') ? require('../assests/InvetManPremiumPlanImage.png') :
+                    planNameLower.includes('starter') ? require('../assests/investMan.png') :
+                      require('../assests/investMan.png'); // default image
+
+              return (
+                <View key={plan._id || index} style={styles.card}>
+                  <View style={[styles.borderBar, { backgroundColor: planColor }]} />
+                  <View style={styles.content}>
+                    <View style={styles.textSection}>
+                      <View style={styles.titleRow}>
+                        <Icon name="schedule" size={14} color={planColor} />
+                        <Text style={styles.title}> {plan.name}</Text>
+                      </View>
+                      <Text style={styles.text}>ROI: {plan.roiPercent}%</Text>
+                      <Text style={styles.text}>Min Amount: ₹{plan.minAmount}</Text>
+                      <Text style={styles.text}>Duration: {plan.durationDays} Days</Text>
+                      <Text style={styles.text}>Payout: {plan.autoPayout ? 'Auto' : 'Manual'}</Text>
+                    </View>
+                    <View style={styles.imageContainer}>
+                      <Image source={planImage} style={styles.image} resizeMode="contain" />
+                    </View>
+                  </View>
+                  <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: planColor }]}>
+                      <Text style={styles.buttonText}>Invest Now</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <Text style={styles.text}>ROI: 1.5% Daily</Text>
-                <Text style={styles.text}>Min Amount: ₹500</Text>
-                <Text style={styles.text}>Duration: 3 Days</Text>
-                <Text style={styles.text}>Payout: Daily</Text>
-              </View>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={require('../assests/investMan.png')}
-                  style={styles.image}
-                />
-              </View>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#2E7D32' }]}>
-                <Text style={styles.buttonText}>Invest Now</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={[styles.borderBar, { backgroundColor: '#FDBE00', }]} />
-            <View style={styles.content}>
-              <View style={styles.textSection}>
-                <View style={styles.titleRow}>
-                  <Icon name="bolt" size={14} color="#FDBE00" />
-                  <Text style={styles.title}> Gold Plan</Text>
-                </View>
-                <Text style={styles.text}>ROI: 2.5% Daily</Text>
-                <Text style={styles.text}>Min Amount: ₹2000</Text>
-                <Text style={styles.text}>Duration: 7 Days</Text>
-                <Text style={styles.text}>Payout: Weekly</Text>
-              </View>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={require('../assests/InvetManGoldPlanImage.png')}
-                  style={styles.image}
-                />
-              </View>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#FDBE00' }]}>
-                <Text style={styles.buttonText}>Invest Now</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.card}>
-            <View style={[styles.borderBar, { backgroundColor: '#9747FF', }]} />
-            <View style={styles.content}>
-              <View style={styles.textSection}>
-                <View style={styles.titleRow}>
-                  <Icon name="schedule" size={14} color="#9747FF" />
-                  <Text style={styles.title}> Premium Plan</Text>
-                </View>
-                <Text style={styles.text}>ROI: 1.5% Daily</Text>
-                <Text style={styles.text}>Min Amount: ₹500</Text>
-                <Text style={styles.text}>Duration: 3 Days</Text>
-                <Text style={styles.text}>Payout: Daily</Text>
-              </View>
-              <View style={styles.imageContainer}>
-                <Image
-                  source={require('../assests/InvetManPremiumPlanImage.png')}
-                  style={styles.image}
-                />
-              </View>
-            </View>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: '#9747FF' }]}>
-                <Text style={styles.buttonText}>Invest Now</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+              );
+            })
+          ) : (
+            <Text style={{ textAlign: 'center', marginTop: 20 }}>No investment plans found.</Text>
+          )}
+
+
           <Text style={styles.investmentHeaderText}>Ongoing Investments</Text>
           <ScrollView
             horizontal

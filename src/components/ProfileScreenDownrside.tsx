@@ -1,11 +1,19 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native';
-
+import { logoutUser } from '../store/features/auth/authThunk';
+import { useDispatch } from 'react-redux';
 
 const ProfileScreenDownrside = () => {
     const navigation = useNavigation();
+    const dispatch = useDispatch();
+
+
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        Alert.alert('Log Out Successfully');
+    };
     return (
         <View style={styles.cardContainer}>
             <View style={styles.card}>
@@ -40,14 +48,12 @@ const ProfileScreenDownrside = () => {
                 </TouchableOpacity>
             </View>
 
-            <TouchableOpacity style={styles.signOutButton}>
-                <Text style={styles.signOutText}>Sign Out</Text>
+            <TouchableOpacity onPress={handleLogout} style={styles.signOutButton}>
+                <Text style={styles.signOutText}>Log Out</Text>
             </TouchableOpacity>
         </View>
     )
 }
-
-export default ProfileScreenDownrside
 
 const styles = StyleSheet.create({
     cardContainer: {
@@ -93,3 +99,5 @@ const styles = StyleSheet.create({
         fontWeight: '500',
     },
 })
+
+export default ProfileScreenDownrside;
