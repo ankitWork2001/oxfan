@@ -129,14 +129,14 @@ const styles = StyleSheet.create({
     },
     balanceText: {
         color: '#fff',
-        fontSize: RFValue(28),
+        fontSize: RFValue(24),
         fontWeight: '300',
         marginTop: 20,
         marginBottom: 30
     },
     imageContainer: {
-        width: 200,
-        height: 160,
+        width: 220,
+        height: 155,
         position: 'absolute'
     },
     image: {

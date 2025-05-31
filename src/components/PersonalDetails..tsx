@@ -8,6 +8,7 @@ import {
     StyleSheet,
     Text,
     TextInput,
+    ToastAndroid,
     TouchableOpacity,
     View,
 } from 'react-native';
@@ -19,6 +20,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails, updateUserDetails } from '../store/features/auth/authThunk';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { AppDispatch } from '../store/store';
+import Clipboard from '@react-native-clipboard/clipboard';
+import { fetchReferralCode } from '../store/features/refferal/refferalThunk';
 
 const PersonalDetails = () => {
     const navigation = useNavigation();
@@ -29,6 +32,7 @@ const PersonalDetails = () => {
     const { token } = useSelector(state => state.auth);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [referralCode, setReferralCode] = useState('');
     const [mobile, setMobile] = useState('');
     const [gender, setGender] = useState('');
     const [dob, setDob] = useState(new Date());
@@ -44,6 +48,16 @@ const PersonalDetails = () => {
             setGender(userDetails.gender || '');
             setDob(userDetails.dob ? new Date(userDetails.dob) : new Date());
         }
+
+        dispatch(fetchReferralCode())
+            .unwrap()
+            .then((data) => {
+                console.log('🎯 Referral code data:', data);
+                setReferralCode(data.code);
+            })
+            .catch((error) => {
+                console.error('❌ Error fetching referral code:', error);
+            });
     }, [basicUser, userDetails]);
 
     if (!userDetails) {
@@ -84,6 +98,12 @@ const PersonalDetails = () => {
                 console.error('❌ Update failed:', err);
                 Alert.alert('Error', 'Failed to update profile. Please try again.');
             });
+    };
+
+
+    const copyToClipboard = () => {
+        Clipboard.setString(referralCode);
+        ToastAndroid.show('Copied to Clipboard!', ToastAndroid.SHORT); // For Android feedback
     };
 
     return (
@@ -176,8 +196,8 @@ const PersonalDetails = () => {
 
                     <Text style={styles.label}>Referral Code</Text>
                     <View style={styles.referralContainer}>
-                        <TextInput style={styles.referralInput} value={`${userDetails.username}2025`} editable={false} />
-                        <TouchableOpacity style={styles.copyButton}>
+                        <TextInput style={styles.referralInput} value={referralCode} editable={false} />
+                        <TouchableOpacity onPress={copyToClipboard} style={styles.copyButton}>
                             <Text style={styles.copyText}>Copy</Text>
                         </TouchableOpacity>
                     </View>
