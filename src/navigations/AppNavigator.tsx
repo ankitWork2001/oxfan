@@ -3,23 +3,27 @@ import { NavigationContainer } from '@react-navigation/native';
 import MainStackNavigator from './MainStackNavigator';
 import store from '../store/store';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Provider, useDispatch } from 'react-redux';
+import { Provider, useDispatch, useSelector } from 'react-redux';
 import { loadUserFromStorage } from '../store/features/auth/authThunk';
+import AdminStackNavigator from './AdminStackNavigator';
 
 const Stack = createNativeStackNavigator();
 
 const AppContent = () => {
   const dispatch = useDispatch();
 
+  // Load user on startup
   useEffect(() => {
-    // Load user from AsyncStorage on app startup
     dispatch(loadUserFromStorage());
   }, [dispatch]);
 
+  // Grab user from Redux store
+  const user = useSelector((state) => state.auth.user);
+  const role = user?.role;
+
   return (
     <NavigationContainer>
-      <MainStackNavigator />
-      {/* <AdminStackNavigator/> */}
+      {role === 'admin' ? <AdminStackNavigator /> : <MainStackNavigator />}
     </NavigationContainer>
   );
 };

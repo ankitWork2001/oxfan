@@ -9,16 +9,28 @@ import {
     TouchableWithoutFeedback,
     Dimensions,
     Image,
+    Alert,
+    ToastAndroid,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
+import { logoutUser } from '../store/features/auth/authThunk';
+import { useDispatch } from 'react-redux';
 
 const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
     const [menuVisible, setMenuVisible] = useState(false);
     const navigation = useNavigation();
     const { height } = Dimensions.get('window');
+    const dispatch = useDispatch();
+
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        ToastAndroid.show('Logged Out Successfully!', ToastAndroid.SHORT);
+        // Navigate to the login screen or appropriate screen after logout0000
+        navigation.getParent()?.navigate('Login');
+    };
 
     const handleNavigate = (screen) => {
         setMenuVisible(false);
@@ -68,6 +80,10 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                     <Icon name='people' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Users</Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('PlansScreen')}>
+                                    <Icon name='work' size={24} color='#8F8F8F' />
+                                    <Text style={styles.menuItem}>Plans</Text>
+                                </TouchableOpacity>
                                 <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Investments')}>
                                     <Icon name='work' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Investments</Text>
@@ -80,6 +96,10 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                     <Icon name='file-upload' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Deposits</Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('WithdrawApprovals')}>
+                                    <Icon name='file-download' size={24} color='#8F8F8F' />
+                                    <Text style={styles.menuItem}>Withdraw Approvals</Text>
+                                </TouchableOpacity>
                                 <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Withdrawals')}>
                                     <Icon name='file-download' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Withdrawals</Text>
@@ -88,7 +108,7 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                     <Icon name='settings' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Settings</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.menuLogoutButton} onPress={() => console.log('Log Out')}>
+                                <TouchableOpacity onPress={handleLogout} style={styles.menuLogoutButton}>
                                     <Text style={styles.menuLogoutButtonText}>Log Out</Text>
                                 </TouchableOpacity>
                             </View>

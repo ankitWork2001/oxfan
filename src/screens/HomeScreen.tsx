@@ -17,6 +17,8 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store/store';
 
 interface ImageItem {
     id: string;
@@ -37,13 +39,15 @@ const HomeScreen: React.FC = () => {
     const flatListRef = useRef<FlatList<ImageItem>>(null);
     const navigation = useNavigation();
 
+    const user = useSelector((state: RootState) => state.auth.user);
+
     return (
         <ScrollView contentContainerStyle={[styles.scrollViewContent, { paddingBottom: insets.bottom + 100 }]}>
             <SafeAreaView>
                 <View>
                     <View style={styles.headerContent}>
                         <View>
-                            <Text style={styles.welcomeText}>Welcome, Rohan!</Text>
+                            <Text style={styles.welcomeText}>Welcome, {user?.name}!</Text>
                             <Text style={styles.subText}>Get Ready To Spin</Text>
                         </View>
                         <TouchableOpacity style={styles.notificationIcon}>

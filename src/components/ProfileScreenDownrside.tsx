@@ -1,4 +1,4 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import { useNavigation } from '@react-navigation/native';
@@ -12,7 +12,7 @@ const ProfileScreenDownrside = () => {
 
     const handleLogout = () => {
         dispatch(logoutUser());
-        Alert.alert('Log Out Successfully');
+        ToastAndroid.show('Logged Out Successfully!', ToastAndroid.SHORT);
     };
     return (
         <View style={styles.cardContainer}>

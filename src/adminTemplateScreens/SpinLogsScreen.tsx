@@ -1,80 +1,103 @@
-import React from 'react'
+import React, { useEffect } from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
-  View
-} from 'react-native'
-import AdminTemplateHeaderPart from '../components/AdminTemplateHeaderPart'
-import { RFValue } from 'react-native-responsive-fontsize'
-import { TextInput } from 'react-native-gesture-handler'
-
-const spinLogs = [
-  { date: '1/2/25', userId: 'UU01', result: 'Win', amount: 'Rs.200' },
-  { date: '1/2/25', userId: 'UU01', result: 'Win', amount: 'Rs.300' },
-  { date: '1/2/25', userId: 'UU01', result: 'Win', amount: 'Rs.200' },
-  { date: '1/2/25', userId: 'UU01', result: 'Win', amount: 'Rs.400' },
-]
+  View,
+  ActivityIndicator,
+} from 'react-native';
+import AdminTemplateHeaderPart from '../components/AdminTemplateHeaderPart';
+import { RFValue } from 'react-native-responsive-fontsize';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchSpinLogs } from '../store/features/adminSpinLogs/adminSpinLogsThunk'; // Adjust the path as needed
+import { AppDispatch, RootState } from '../store/store';
 
 const columnWidths = {
-  date: 100,
-  userId: 100,
-  result: 100,
-  amount: 120,
-}
+  date: 120,
+  userId: 120,
+  result: 120,
+  amount: 140,
+};
 
 const SpinLogsScreen = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const { spins, loading, error } = useSelector((state: RootState) => state.adminSpinLogs);
+
+  useEffect(() => {
+    dispatch(fetchSpinLogs());
+  }, [dispatch]);
+
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
       <ScrollView>
-        <AdminTemplateHeaderPart name='Spin Logs' paddingBottom={20}/>
+        <AdminTemplateHeaderPart name="Spin Logs" paddingBottom={20} />
         <View style={styles.container}>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.HorizentalScrollContainer}
-          >
-            <View style={styles.TableContainer}>
-              <View style={[styles.row, styles.headerRow]}>
-                <Text style={[styles.headerCell, { width: columnWidths.date }]}>Dates</Text>
-                <Text style={[styles.headerCell, { width: columnWidths.userId }]}>User ID</Text>
-                <Text style={[styles.headerCell, { width: columnWidths.result }]}>Spin Result</Text>
-                <Text style={[styles.headerCell, { width: columnWidths.amount }]}>Amount Credited</Text>
-              </View>
-
-              {spinLogs.map((log, index) => (
-                <View style={styles.row} key={index}>
-                  <Text style={[styles.cell, { width: columnWidths.date }]}>{log.date}</Text>
-                  <Text style={[styles.cell, { width: columnWidths.userId }]}>{log.userId}</Text>
-                  <Text style={[styles.cell, { width: columnWidths.result }]}>{log.result}</Text>
-                  <Text style={[styles.cell, { width: columnWidths.amount }]}>{log.amount}</Text>
+          {loading && (
+            <ActivityIndicator size="large" color="#4CAF50" style={{ marginVertical: 20 }} />
+          )}
+          {error && (
+            <Text style={{ color: 'red', textAlign: 'center', marginVertical: 10 }}>
+              {error}
+            </Text>
+          )}
+          {!loading && !error && (
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.HorizentalScrollContainer}
+            >
+              <View style={styles.TableContainer}>
+                <View style={[styles.row, styles.headerRow]}>
+                  <Text style={[styles.headerCell, { width: columnWidths.date }]}>Date</Text>
+                  <Text style={[styles.headerCell, { width: columnWidths.userId }]}>User</Text>
+                  <Text style={[styles.headerCell, { width: columnWidths.result }]}>Result Value</Text>
+                  <Text style={[styles.headerCell, { width: columnWidths.amount }]}>Spin Type</Text>
                 </View>
-              ))}
-            </View>
-          </ScrollView>
+                {spins.length > 0 ? (
+                  spins.map((log) => (
+                    <View style={styles.row} key={log._id}>
+                      <Text style={[styles.cell, { width: columnWidths.date }]}>
+                        {new Date(log.createdAt).toLocaleDateString()}
+                      </Text>
+                      <Text style={[styles.cell, { width: columnWidths.userId }]}>
+                        {log.userId?.username || 'N/A'}
+                      </Text>
+                      <Text style={[styles.cell, { width: columnWidths.result }]}>
+                        {log.resultValue}
+                      </Text>
+                      <Text style={[styles.cell, { width: columnWidths.amount }]}>
+                        {log.type}
+                      </Text>
+                    </View>
+                  ))
+                ) : (
+                  <View style={styles.row}>
+                    <Text style={styles.cell}>No spin logs available.</Text>
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
-  )
-}
+  );
+};
 
-export default SpinLogsScreen
+export default SpinLogsScreen;
 
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    backgroundColor: "#F3F3F3",
+    backgroundColor: '#F3F3F3',
     margin: 10,
-    borderRadius: 6
+    borderRadius: 6,
   },
-  
   HorizentalScrollContainer: {
     backgroundColor: '#fff',
   },
-  TableContainer: {
-
-  },
+  TableContainer: {},
   row: {
     flexDirection: 'row',
     paddingVertical: 12,
@@ -93,13 +116,4 @@ const styles = StyleSheet.create({
   cell: {
     paddingHorizontal: 10,
   },
-  link: {
-    color: 'blue',
-    marginRight: 10,
-    textDecorationLine: 'underline'
-  },
-  reject: {
-    color: 'red',
-    textDecorationLine: 'underline'
-  },
-})
+});

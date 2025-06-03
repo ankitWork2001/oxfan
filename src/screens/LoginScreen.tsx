@@ -1,6 +1,7 @@
 import {
   Dimensions, Image, SafeAreaView, StyleSheet, Text, TextInput,
-  TouchableOpacity, View, ActivityIndicator, Alert
+  TouchableOpacity, View, ActivityIndicator, Alert,
+  ToastAndroid
 } from 'react-native';
 import React, { useState } from 'react';
 import SignInLoginHeadPart from '../components/SignInLoginHeadPart';
@@ -30,7 +31,7 @@ export default function LoginScreen() {
     setLoading(true);
     try {
       await dispatch(loginUser({ email: emailOrPhone, password }, navigation));
-      Alert.alert('Login Successful');
+      ToastAndroid.show('LogIn Successfully!', ToastAndroid.SHORT);
     } catch (error) {
       Alert.alert("Login Failed", error?.response?.data?.message || 'Login failed');
     } finally {
