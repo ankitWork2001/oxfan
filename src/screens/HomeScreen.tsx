@@ -39,6 +39,14 @@ const HomeScreen: React.FC = () => {
     const flatListRef = useRef<FlatList<ImageItem>>(null);
     const navigation = useNavigation();
 
+    const handleNavigation = (routeName: string) => {
+        if (user) {
+            navigation.navigate(routeName as never);
+        } else {
+            navigation.navigate('Login' as never);
+        }
+    };
+
     const user = useSelector((state: RootState) => state.auth.user);
 
     return (
@@ -50,7 +58,7 @@ const HomeScreen: React.FC = () => {
                             <Text style={styles.welcomeText}>Welcome, {user?.name}!</Text>
                             <Text style={styles.subText}>Get Ready To Spin</Text>
                         </View>
-                        <TouchableOpacity style={styles.notificationIcon}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Notifications')} style={styles.notificationIcon}>
                             <Icon name='notifications' size={20} color="#FF8800" />
                         </TouchableOpacity>
                     </View>
@@ -94,15 +102,15 @@ const HomeScreen: React.FC = () => {
                     </View>
 
                     <View style={styles.IconMainContaineer}>
-                        <TouchableOpacity onPress={() => navigation.navigate('Deposit')} style={styles.IconContaineer}>
+                        <TouchableOpacity onPress={() => handleNavigation('Deposit')} style={styles.IconContaineer}>
                             <Icon name='upload' size={26} color='#FFFFFF' />
                             <Text style={styles.IconText}>DEPOSIT</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { navigation.navigate('Withdraw') }} style={styles.IconContaineer}>
+                        <TouchableOpacity onPress={() => { handleNavigation('Withdraw') }} style={styles.IconContaineer}>
                             <Icon name='download' size={26} color='#FFFFFF' />
                             <Text style={styles.IconText}>WITHDRAW</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.IconContaineer}>
+                        <TouchableOpacity onPress={() => navigation.navigate('Spin')} style={styles.IconContaineer}>
                             <Icon name='radar' size={26} color='#FFFFFF' />
                             <Text style={styles.IconText}>SPIN NOW</Text>
                         </TouchableOpacity>

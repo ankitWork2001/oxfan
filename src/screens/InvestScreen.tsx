@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchActiveInvestments, fetchInvestmentsHistory, getPlans } from '../store/features/investment/investmentThunk';
 import { AppDispatch, RootState } from '../store/store';
+import { useNavigation } from '@react-navigation/native';
 
 interface InvestmentPlan {
   _id?: string;
@@ -56,6 +57,7 @@ const InvestScreen = () => {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch<AppDispatch>();
   const [investmentHistory, setInvestmentHistory] = useState<InvestmentHistoryItem[]>([]);
+  const navigation = useNavigation();
 
   const { activeInvestments, investmentPlans, plansLoading, plansError } = useSelector(
     (state: RootState) => state.investment
@@ -102,7 +104,7 @@ const InvestScreen = () => {
         <View style={{ paddingTop: insets.top }}>
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Choose Your Investment Plan</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
               <Icon name='notifications' size={20} color='#fff' />
             </TouchableOpacity>
           </View>

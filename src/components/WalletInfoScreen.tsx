@@ -28,7 +28,7 @@ const PersonalDetails = () => {
                         </TouchableOpacity>
                         <Text style={styles.headerText}>Wallet Info</Text>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
                         <Icon name="settings" size={24} color="#fff" />
                     </TouchableOpacity>
                 </View>

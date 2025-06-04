@@ -30,7 +30,7 @@ const ProfileScreenUpperside = () => {
                     <TouchableOpacity><Icon name='arrow-back' size={24} color='#fff' /></TouchableOpacity>
                     <View style={styles.IconSubContainer}>
                         <TouchableOpacity onPress={() => navigation.navigate('PersonalDetails')}><Icon name='edit-square' size={24} color='#fff' /></TouchableOpacity>
-                        <TouchableOpacity><Icon name='settings' size={24} color='#fff' /></TouchableOpacity>
+                        <TouchableOpacity onPress={() => navigation.navigate('Settings')}><Icon name='settings' size={24} color='#fff' /></TouchableOpacity>
                     </View>
                 </View>
 

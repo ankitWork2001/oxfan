@@ -36,6 +36,7 @@ const UpdatePlan = () => {
         }
 
         const updatedPlan = {
+            _id: plan._id,
             name,
             roiPercent: parseInt(roiPercent),
             minAmount: parseInt(minAmount),
@@ -43,7 +44,7 @@ const UpdatePlan = () => {
             autoPayout: plan.autoPayout,
         };
         console.log('Sending update:', updatedPlan);
-        dispatch(updateInvestment({ id: plan._id, updatedData: updatedPlan }))
+        dispatch(updateInvestment({ id: plan._id, updateData: updatedPlan }))
             .unwrap()
             .then((response) => {
                 console.log('API Response:', response);

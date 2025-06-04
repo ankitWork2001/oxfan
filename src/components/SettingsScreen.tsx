@@ -17,7 +17,7 @@ const SettingsScreen = () => {
                     </TouchableOpacity>
                     <Text style={styles.headerText}>Settings</Text>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
                     <Icon name="notifications" size={20} color="#fff" />
                 </TouchableOpacity>
             </View>
