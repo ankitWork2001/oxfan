@@ -1,14 +1,26 @@
-import { Dimensions, Image, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import Icon from 'react-native-vector-icons/MaterialIcons'
-import { useNavigation } from '@react-navigation/native'
-import { useDispatch, useSelector } from 'react-redux'
-import { getUserDetails } from '../store/features/auth/authThunk'
-import { RFValue } from 'react-native-responsive-fontsize'
+import {
+    Dimensions,
+    Image,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useNavigation } from '@react-navigation/native';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUserDetails } from '../store/features/auth/authThunk';
+import { RFValue } from 'react-native-responsive-fontsize';
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const WithdrawalScreen = () => {
     const navigation = useNavigation();
-    const { height, width } = Dimensions.get('window');
     const dispatch = useDispatch();
     const { basicUser, userDetails } = useSelector(state => state.auth);
 
@@ -16,7 +28,7 @@ const WithdrawalScreen = () => {
         if (basicUser?._id && !userDetails) {
             dispatch(getUserDetails(basicUser._id));
         }
-        console.log("Withdrawal Screen User  data:", userDetails);
+        console.log('Withdrawal Screen User data:', userDetails);
     }, [basicUser, userDetails]);
 
     if (!userDetails) return null;
@@ -28,26 +40,27 @@ const WithdrawalScreen = () => {
         { id: 'upi', label: 'UPI', icon: require('../assests/WithdrawScreenUpiImage.png') },
         { id: 'crypto', label: 'Crypto', icon: require('../assests/WithdrawScreenCryptoImage.png') },
     ];
+
     return (
         <SafeAreaView style={styles.safeArea}>
             <View style={styles.UpperContainer}>
                 <View style={styles.IconContainer}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Icon style={styles.Icon} name="arrow-back" size={24} />
+                        <Icon style={styles.Icon} name="arrow-back" size={RFValue(24)} />
                     </TouchableOpacity>
                     <TouchableOpacity>
-                        <Icon style={styles.Icon} name="notifications" size={24} />
+                        <Icon style={styles.Icon} name="notifications" size={RFValue(24)} />
                     </TouchableOpacity>
                 </View>
 
                 <View style={styles.contentRow}>
                     <View style={styles.textContainer}>
                         <Text style={styles.text}>
-                            Hi {userDetails.name}, cash out your {"\n"}rewards fast and safe!"
+                            Hi {userDetails.name}, cash out your {'\n'}rewards fast and safe!
                         </Text>
-                        <Text style={styles.balanceText}>Balance : ${userDetails?.wallet?.balance}</Text>
+                        <Text style={styles.balanceText}>Balance: ${userDetails?.wallet?.balance}</Text>
                     </View>
-                    <View style={[styles.imageContainer, { top: height * -0.012, left: width * 0.5 }]}>
+                    <View style={styles.imageContainer}>
                         <Image
                             style={styles.image}
                             source={require('../assests/WithdrawalScreenImage.png')}
@@ -70,32 +83,30 @@ const WithdrawalScreen = () => {
                 <Text style={styles.selectText}>Select (2% fee, ₹10 min)</Text>
 
                 <View style={styles.optionsRow}>
-                    {methods.map((method) => (
+                    {methods.map(method => (
                         <TouchableOpacity
                             key={method.id}
                             style={[
                                 styles.optionBox,
                                 selectedMethod === method.id && styles.selectedBox,
                             ]}
-                            onPress={() => setSelectedMethod(method.id)}
-                        >
+                            onPress={() => setSelectedMethod(method.id)}>
                             <Image source={method.icon} style={styles.optionIcon} />
                             <Text style={styles.optionText}>{method.label}</Text>
                         </TouchableOpacity>
                     ))}
                 </View>
-                <View style={styles.otpButtonConatiner}>
+                <View style={styles.otpButtonContainer}>
                     <TouchableOpacity style={styles.otpButton}>
-                        <Text style={styles.otpButtonText}>Sent OTP</Text>
+                        <Text style={styles.otpButtonText}>Send OTP</Text>
                     </TouchableOpacity>
                 </View>
             </View>
         </SafeAreaView>
+    );
+};
 
-    )
-}
-
-export default WithdrawalScreen
+export default WithdrawalScreen;
 
 const styles = StyleSheet.create({
     safeArea: {
@@ -104,118 +115,127 @@ const styles = StyleSheet.create({
     },
     UpperContainer: {
         backgroundColor: '#34A853',
-        paddingTop: 20,
-        paddingHorizontal: 16,
+        paddingTop: hp('4%'),
+        paddingHorizontal: wp('5%'),
+        position: 'relative',  // Make this relative so children can use absolute positioning
     },
     IconContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginBottom: 20,
+        marginBottom: hp('2%'),
     },
     Icon: {
         color: '#fff',
     },
     contentRow: {
         flexDirection: 'row',
+        alignItems: 'center',
+        width: wp('100%'),
     },
     textContainer: {
         flex: 1,
-        paddingRight: 10,
+        paddingRight: wp('2%'),
     },
     text: {
         color: '#fff',
-        fontSize: RFValue(16),
+        fontSize: RFValue(14),
         fontWeight: '400',
     },
     balanceText: {
         color: '#fff',
         fontSize: RFValue(24),
         fontWeight: '300',
-        marginTop: 20,
-        marginBottom: 30
+        marginTop: hp('2%'),
+        marginBottom: hp('3%'),
     },
     imageContainer: {
-        width: 220,
-        height: 155,
-        position: 'absolute'
+        position: 'absolute',  // Absolutely position the image
+        bottom: 0,             // Align it to the bottom
+        right: wp('4%'),       // Align it to the right (same horizontal padding as container)
+        width: wp('40%'),
+        height: hp('20%'),
     },
     image: {
-        height: "100%",
-        width: "100%"
+        top:hp('4.5%'),
+        width: '100%',
+        height: '100%',
     },
     DownContainer: {
-        margin: 20,
+        marginHorizontal: wp('4%'),
+        marginVertical: hp('2%'),
         backgroundColor: '#fff',
         borderRadius: 10,
-        padding: 20,
+        padding: wp('4%'),
         elevation: 5,
         shadowColor: '#000',
         shadowOpacity: 0.1,
         shadowRadius: 10,
     },
     heading: {
-        fontSize: 22,
+        fontSize: RFValue(22),
         fontWeight: '600',
         color: '#1c3b2f',
-        marginBottom: 16,
+        marginBottom: hp('2%'),
     },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 8,
-        paddingHorizontal: 15,
-        paddingVertical: 10,
-        fontSize: 16,
-        marginBottom: 20,
+        paddingHorizontal: wp('4%'),
+        paddingVertical: hp('1.2%'),
+        fontSize: RFValue(16),
+        marginBottom: hp('2%'),
     },
     selectText: {
-        fontSize: 14,
-        marginBottom: 10,
+        fontSize: RFValue(14),
+        marginBottom: hp('1%'),
         color: '#333',
     },
     optionsRow: {
         flexDirection: 'row',
-        gap: 10,
-        marginBottom: 20,
+        flexWrap: 'wrap',
+        gap: wp('2%'),
+        marginBottom: hp('2%'),
     },
     optionBox: {
-        display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         borderRadius: 8,
-        padding: 5,
-        paddingHorizontal: 10,
+        padding: wp('2%'),
         borderWidth: 1,
         borderColor: '#ddd',
         backgroundColor: '#fff',
+        marginRight: wp('2%'),
+        marginBottom: hp('1%'),
     },
     selectedBox: {
         borderColor: '#1c3b2f',
         backgroundColor: '#e8f5e9',
     },
     optionIcon: {
-        width: 24,
-        height: 24,
-        resizeMode: 'contain'
+        width: wp('6%'),
+        height: wp('6%'),
+        resizeMode: 'contain',
+        marginRight: wp('2%'),
     },
     optionText: {
-        fontSize: 16,
+        fontSize: RFValue(16),
         fontWeight: '500',
     },
-    otpButtonConatiner: {
+    otpButtonContainer: {
         alignItems: 'center',
-        marginTop: 20
+        marginTop: hp('2%'),
     },
     otpButton: {
         backgroundColor: '#ff8c00',
         borderRadius: 8,
-        paddingVertical: 12,
+        paddingVertical: hp('1.5%'),
         alignItems: 'center',
-        width: '60%'
+        width: wp('60%'),
     },
     otpButtonText: {
         color: '#fff',
         fontWeight: '600',
-        fontSize: 16,
+        fontSize: RFValue(16),
     },
 });

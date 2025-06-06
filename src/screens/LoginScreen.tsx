@@ -1,6 +1,13 @@
 import {
-  Dimensions, Image, SafeAreaView, StyleSheet, Text, TextInput,
-  TouchableOpacity, View, ActivityIndicator, Alert,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  Alert,
   ToastAndroid
 } from 'react-native';
 import React, { useState } from 'react';
@@ -11,9 +18,9 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../store/store';
 import { loginUser } from '../store/features/auth/authThunk';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 export default function LoginScreen() {
-  const { height, width } = Dimensions.get('window');
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useDispatch<AppDispatch>();
 
@@ -39,10 +46,9 @@ export default function LoginScreen() {
     }
   };
 
-
   return (
     <SafeAreaView style={styles.container}>
-      <SignInLoginHeadPart />
+      <SignInLoginHeadPart name={'Login'}/>
       <View style={styles.body}>
         <Text style={styles.welcomeText}>Welcome Back!</Text>
 
@@ -74,9 +80,8 @@ export default function LoginScreen() {
           >
             <Icon
               name={showPassword ? "visibility-off" : "visibility"}
-              size={20}
+              size={RFValue(20)}
               color="#000"
-              style={{ right: width * 0.02, top: height * 0.008 }}
             />
           </TouchableOpacity>
         </View>
@@ -117,7 +122,8 @@ export default function LoginScreen() {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.signUpPrompt}>Don't Have An Account ?
+        <Text style={styles.signUpPrompt}>
+          Don't Have An Account?
           <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
             <Text style={styles.signInLink}>  Sign Up</Text>
           </TouchableOpacity>
@@ -130,55 +136,55 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     backgroundColor: '#fff',
+    flex: 1,
   },
   body: {
-    padding: 30,
+    padding: wp('8%'),
     backgroundColor: '#fff',
-    borderTopLeftRadius: 25,
-    borderTopRightRadius: 25,
-    marginTop: -100
+    borderTopLeftRadius: wp('6%'),
+    borderTopRightRadius: wp('6%'),
+    marginTop: -hp('12%'),
   },
   welcomeText: {
     fontSize: RFValue(20),
     fontWeight: 'bold',
     color: '#FF8800',
-    marginBottom: 15,
+    marginBottom: hp('2%'),
   },
   label: {
     fontSize: RFValue(16),
-    marginTop: 10,
-    marginBottom: 10,
+    marginBottom: hp('1%'),
   },
   input: {
     color: '#000',
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginBottom: 15
+    borderRadius: wp('2%'),
+    paddingHorizontal: wp('4%'),
+    paddingVertical: hp('1.1%'),
+    marginBottom: hp('2%'),
   },
   passwordContainer: {
-    display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-end'
+    alignItems: 'center',
   },
   inputPassword: {
+    flex: 1,
     borderWidth: 1,
     borderColor: '#ccc',
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginBottom: 15,
-    width: "100%",
-    color: '#000'
+    borderRadius: wp('2%'),
+    paddingHorizontal: wp('4%'),
+    paddingVertical: hp('1.1%'),
+    marginBottom: hp('2%'),
+    color: '#000',
   },
   icon: {
     position: 'absolute',
+    right: wp('2.5%'),
+    bottom: hp('2.5%'),
   },
   forgotPassword: {
     alignItems: 'flex-end',
-    marginVertical: 5,
   },
   forgotPasswordText: {
     fontSize: RFValue(10),
@@ -186,27 +192,27 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     backgroundColor: 'green',
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginTop: 30
+    paddingVertical: hp('1.5%'),
+    borderRadius: wp('2%'),
+    marginTop: hp('3%'),
   },
   loginButtonText: {
     color: '#fff',
     textAlign: 'center',
     fontSize: RFValue(14),
-    fontWeight: '400'
+    fontWeight: '500',
   },
   orText: {
     textAlign: 'center',
-    marginTop: 25,
-    marginBottom: 10,
+    marginTop: hp('3%'),
+    marginBottom: hp('1.5%'),
     fontSize: RFValue(12),
     fontWeight: '600',
   },
   dividerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 15,
+    marginVertical: hp('2%'),
   },
   divider: {
     flex: 1,
@@ -214,35 +220,35 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
   },
   loginWith: {
-    marginHorizontal: 10,
+    marginHorizontal: wp('2.5%'),
     fontSize: RFValue(12),
     color: '#888',
   },
   socialIconContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 20,
-    marginTop: 20
+    marginBottom: hp('3%'),
+    marginTop: hp('3%'),
   },
   button: {
     backgroundColor: "#E7E7E7",
-    padding: 10,
-    borderRadius: 7
+    padding: wp('3%'),
+    borderRadius: wp('2%'),
   },
   socialIcon: {
-    width: 35,
-    height: 35,
+    width: wp('9%'),
+    height: wp('9%'),
     resizeMode: 'contain',
   },
   signUpPrompt: {
-    marginTop: 60,
-    marginBottom: 20,
+    marginTop: hp('7%'),
+    marginBottom: hp('3%'),
     textAlign: 'center',
     fontSize: RFValue(12),
     color: '#000',
   },
   signInLink: {
     color: "green",
-    fontWeight: '600'
-  }
+    fontWeight: '600',
+  },
 });

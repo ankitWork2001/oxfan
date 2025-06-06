@@ -15,6 +15,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails, updateUserDetails } from '../store/features/auth/authThunk';
@@ -25,11 +26,8 @@ import { fetchReferralCode } from '../store/features/refferal/refferalThunk';
 
 const PersonalDetails = () => {
     const navigation = useNavigation();
-    const { height, width } = Dimensions.get('window');
     const dispatch = useDispatch<AppDispatch>();
-    // const { user } = useSelector(state => state.auth);
-    const { basicUser, userDetails } = useSelector(state => state.auth);
-    const { token } = useSelector(state => state.auth);
+    const { basicUser, userDetails, token } = useSelector(state => state.auth);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [referralCode, setReferralCode] = useState('');
@@ -52,7 +50,6 @@ const PersonalDetails = () => {
         dispatch(fetchReferralCode())
             .unwrap()
             .then((data) => {
-                console.log('🎯 Referral code data:', data);
                 setReferralCode(data.code);
             })
             .catch((error) => {
@@ -63,13 +60,13 @@ const PersonalDetails = () => {
     if (!userDetails) {
         return (
             <SafeAreaView style={styles.MainContainer}>
-                <Text style={{ textAlign: 'center', marginTop: 50 }}>Loading user details...</Text>
+                <Text style={{ textAlign: 'center', marginTop: hp('5%') }}>Loading user details...</Text>
             </SafeAreaView>
         );
     }
 
     const onChangeDate = (event, selectedDate) => {
-        setShowPicker(Platform.OS === 'ios'); // iOS shows it always, Android closes on select
+        setShowPicker(Platform.OS === 'ios');
         if (selectedDate) {
             setDob(selectedDate);
         }
@@ -84,26 +81,20 @@ const PersonalDetails = () => {
             gender,
             dob: dob.toISOString(),
         };
-        console.log('Sending update payload:', payload);
-        console.log('Using token:', token);
-
 
         dispatch(updateUserDetails({ data: payload, token }))
             .unwrap()
             .then((res) => {
-                console.log('✅ Update successful:', res);
                 Alert.alert('Success', 'Profile updated successfully!');
             })
             .catch((err) => {
-                console.error('❌ Update failed:', err);
                 Alert.alert('Error', 'Failed to update profile. Please try again.');
             });
     };
 
-
     const copyToClipboard = () => {
         Clipboard.setString(referralCode);
-        ToastAndroid.show('Copied to Clipboard!', ToastAndroid.SHORT); // For Android feedback
+        ToastAndroid.show('Copied to Clipboard!', ToastAndroid.SHORT);
     };
 
     return (
@@ -129,18 +120,18 @@ const PersonalDetails = () => {
                             source={
                                 userDetails?.avatar
                                     ? { uri: `https://vtoxfambackend.onrender.com${userDetails.avatar}` }
-                                    : require('../assests/NoProfileImagePic.png') // Corrected path
+                                    : require('../assests/NoProfileImagePic.png')
                             }
                             style={styles.profileImage}
                             resizeMode='contain'
                         />
                     </View>
                     <TouchableOpacity
-                        style={[styles.carmeraIcon, { right: width * 0.08, top: height * 0.07 }]}
+                        style={[styles.carmeraIcon, { right: wp('8%'), top: hp('7%') }]}
                     >
                         <Icon name="add-a-photo" size={14} />
                     </TouchableOpacity>
-                    <View style={{ right: width * 0.04 }}>
+                    <View style={{ right: wp('4%') }}>
                         <Text style={styles.UserIdText}>UserName</Text>
                         <Text style={styles.IdText}>{userDetails.username}</Text>
                     </View>
@@ -148,16 +139,14 @@ const PersonalDetails = () => {
 
                 <View style={styles.inputsMainContainer}>
                     <Text style={styles.label}>Full Name</Text>
-                    <TextInput style={styles.input} value={name} onChangeText={setName} editable />
+                    <TextInput style={styles.input} value={name} onChangeText={setName} />
 
                     <Text style={styles.label}>Date Of Birth</Text>
                     <TouchableOpacity
                         style={styles.dateInput}
                         onPress={() => setShowPicker(true)}
                     >
-                        <Text style={styles.dateText}>
-                            {dob.toDateString()}
-                        </Text>
+                        <Text style={styles.dateText}>{dob.toDateString()}</Text>
                         <Icon name="calendar-today" size={20} color="#4CAF50" />
                     </TouchableOpacity>
 
@@ -167,7 +156,7 @@ const PersonalDetails = () => {
                             mode="date"
                             display="default"
                             onChange={onChangeDate}
-                            maximumDate={new Date()} // Optional: prevent future dates
+                            maximumDate={new Date()}
                         />
                     )}
 
@@ -189,10 +178,10 @@ const PersonalDetails = () => {
                     </View>
 
                     <Text style={styles.label}>E-Mail</Text>
-                    <TextInput style={styles.input} value={email} onChangeText={setEmail} editable />
+                    <TextInput style={styles.input} value={email} onChangeText={setEmail} />
 
                     <Text style={styles.label}>Phone Number</Text>
-                    <TextInput style={styles.input} value={mobile} onChangeText={setMobile} editable />
+                    <TextInput style={styles.input} value={mobile} onChangeText={setMobile} />
 
                     <Text style={styles.label}>Referral Code</Text>
                     <View style={styles.referralContainer}>
@@ -223,13 +212,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         backgroundColor: '#34A853',
-        paddingVertical: 30,
-        paddingHorizontal: 30,
+        paddingVertical: hp('4%'),
+        paddingHorizontal: wp('6%'),
     },
     headerTextContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
+        gap: wp('2%'),
     },
     headerText: {
         fontSize: RFValue(20),
@@ -238,32 +227,27 @@ const styles = StyleSheet.create({
     },
     IconSubContainer: {
         flexDirection: 'row',
-        gap: 10,
+        gap: wp('2%'),
     },
     profileImageAndTextContainer: {
         flexDirection: 'row',
-        // justifyContent: 'flex-start',
-        marginHorizontal: 25,
-        marginTop: 25,
+        marginHorizontal: wp('6%'),
+        marginTop: hp('3%'),
     },
     profileImageContainer: {
-        width: 90,
-        height: 78,
+        width: wp('22%'),
+        height: hp('10%'),
         borderRadius: 50,
     },
     profileImage: {
         width: '100%',
         height: '100%',
         resizeMode: 'contain',
-
     },
-    // Image: {
-    //     resizeMode: 'contain',
-    // },
     carmeraIcon: {
         backgroundColor: '#FFFFFF',
-        width: 24,
-        height: 24,
+        width: wp('6%'),
+        height: wp('6%'),
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 5,
@@ -273,7 +257,7 @@ const styles = StyleSheet.create({
         fontSize: RFValue(12),
         fontWeight: '500',
         color: '#8F8F8F',
-        marginTop: 10,
+        marginTop: hp('1%'),
     },
     IdText: {
         fontSize: RFValue(10),
@@ -281,27 +265,27 @@ const styles = StyleSheet.create({
         color: '#000',
     },
     inputsMainContainer: {
-        padding: 20,
+        padding: wp('5%'),
     },
     label: {
         fontWeight: 'bold',
-        fontSize: 12,
+        fontSize: RFValue(12),
         color: '#999',
-        marginBottom: 5,
-        marginTop: 15,
+        marginBottom: hp('0.5%'),
+        marginTop: hp('2%'),
     },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 6,
-        padding: 12,
+        padding: wp('3%'),
         color: '#000',
     },
     dateInput: {
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 6,
-        padding: 12,
+        padding: wp('3%'),
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -311,14 +295,14 @@ const styles = StyleSheet.create({
     },
     genderContainer: {
         flexDirection: 'row',
-        gap: 10,
-        marginTop: 5,
+        gap: wp('2%'),
+        marginTop: hp('0.5%'),
     },
     genderButton: {
         flex: 1,
         borderWidth: 1,
         borderColor: '#ccc',
-        paddingVertical: 10,
+        paddingVertical: hp('1.5%'),
         alignItems: 'center',
         borderRadius: 6,
     },
@@ -335,7 +319,7 @@ const styles = StyleSheet.create({
     },
     referralContainer: {
         flexDirection: 'row',
-        gap: 10,
+        gap: wp('2%'),
         alignItems: 'center',
     },
     referralInput: {
@@ -343,13 +327,13 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 6,
-        padding: 12,
+        padding: wp('3%'),
         color: '#000',
     },
     copyButton: {
         backgroundColor: '#FFA500',
-        paddingHorizontal: 20,
-        paddingVertical: 12,
+        paddingHorizontal: wp('5%'),
+        paddingVertical: hp('1.5%'),
         borderRadius: 6,
     },
     copyText: {
@@ -358,9 +342,9 @@ const styles = StyleSheet.create({
     },
     verifiedButton: {
         backgroundColor: '#4CAF50',
-        padding: 15,
+        padding: hp('2%'),
         borderRadius: 6,
-        marginTop: 30,
+        marginTop: hp('3%'),
         alignItems: 'center',
     },
     verifiedText: {

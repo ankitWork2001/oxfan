@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
         fontWeight: '400'
     },
     title: {
-        fontSize: 20,
+        fontSize: RFValue(20),
         fontWeight: '600',
         marginBottom: 12,
     },
@@ -351,12 +351,12 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     label: {
-        fontSize: 14,
+        fontSize: RFValue(14),
         fontWeight: '500',
         color: '#000',
     },
     percentage: {
-        fontSize: 13,
+        fontSize: RFValue(13),
         fontWeight: '400',
         color: '#000',
     },

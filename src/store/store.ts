@@ -8,6 +8,7 @@ import adminSpinLogsReducer from './features/adminSpinLogs/adminSpinLogsSlice';
 import depositsReducer from './features/adminDeposits/adminDepositsSlice';
 import withdrawalsReducer from './features/adminWithdrawals/adminWithdrawalsSlice';
 import plansReducer from './features/adminPlans/adminPlansSlice'
+import walletReducer from './features/wallet/walletSlice'
 
 const store = configureStore({
   reducer: {
@@ -20,6 +21,7 @@ const store = configureStore({
     deposits: depositsReducer,
     withdrawals: withdrawalsReducer,
     plans: plansReducer,
+    wallet: walletReducer,
   },
 });
 

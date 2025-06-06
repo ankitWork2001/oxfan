@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View,
     Text,
@@ -17,8 +17,13 @@ import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
-import { RootState } from '../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
+import {
+    widthPercentageToDP as wp,
+    heightPercentageToDP as hp
+} from 'react-native-responsive-screen';
+import { fetchWalletBalance } from '../store/features/wallet/walletThunk';
 
 interface ImageItem {
     id: string;
@@ -38,6 +43,9 @@ const HomeScreen: React.FC = () => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList<ImageItem>>(null);
     const navigation = useNavigation();
+    const dispatch = useDispatch<AppDispatch>();
+    const [userBalance, setUserBalance] = useState<number>(0); // Replace this with actual data from Redux or API
+
 
     const handleNavigation = (routeName: string) => {
         if (user) {
@@ -46,6 +54,18 @@ const HomeScreen: React.FC = () => {
             navigation.navigate('Login' as never);
         }
     };
+
+    useEffect(() => {
+        dispatch(fetchWalletBalance())
+            .unwrap()
+            .then((data) => {
+                console.log("wallet data:", data.wallet.balance);
+                setUserBalance(data.wallet.balance)
+            })
+            .catch((err) => {
+                console.log('Error fetching Wallet:', err);
+            })
+    }, [dispatch])
 
     const user = useSelector((state: RootState) => state.auth.user);
 
@@ -124,7 +144,7 @@ const HomeScreen: React.FC = () => {
                         <View style={styles.divider} />
                         <View style={styles.summaryItem}>
                             <Text style={styles.label}>Balance</Text>
-                            <Text style={[styles.value, { color: '#fbc02d' }]}>₹3500.45</Text>
+                            <Text style={[styles.value, { color: '#fbc02d' }]}>{userBalance}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.summaryItem}>
@@ -256,7 +276,7 @@ const styles = StyleSheet.create({
     },
     headerContent: {
         backgroundColor: "#34A853",
-        padding: 30,
+        padding: wp(6), // ~24px on a 400px screen
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -264,18 +284,18 @@ const styles = StyleSheet.create({
     welcomeText: {
         color: '#fff',
         fontSize: RFValue(26),
-        fontWeight: 500,
+        fontWeight: '500',
     },
     subText: {
         color: '#fff',
-        fontSize: 14,
-        marginTop: 5,
-        fontWeight: 200
+        fontSize: RFValue(14),
+        marginTop: hp(0.5),
+        fontWeight: '200',
     },
     notificationIcon: {
         backgroundColor: '#FFFFFF',
-        borderRadius: 6,
-        padding: 4
+        borderRadius: wp(1.5), // ~6px on a 400px screen
+        padding: wp(1), // ~4px on a 400px screen
     },
     imageMainContainer: {
         marginVertical: 20,

@@ -10,6 +10,7 @@ import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 type LevelKey = 'level1' | 'level2' | 'level3';
 
@@ -54,16 +55,16 @@ const ReferralDetailsScreen = () => {
       <View style={styles.headerContentContainer}>
         <View style={styles.headerTextContainer}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Icon name='arrow-back' size={20} color='#fff' />
+            <Icon name='arrow-back' size={RFValue(20)} color='#fff' />
           </TouchableOpacity>
           <Text style={styles.headerText}>Referral Earnings</Text>
         </View>
         <TouchableOpacity>
-          <Icon name='notifications' size={20} color='#fff' />
+          <Icon name='notifications' size={RFValue(20)} color='#fff' />
         </TouchableOpacity>
       </View>
 
-      <View style={[styles.tabsMainContainer, { padding: 16 }]}>
+      <View style={[styles.tabsMainContainer, { padding: wp('4%') }]}>
         <View style={styles.tabs}>
           {levels.map((level) => (
             <TouchableOpacity
@@ -90,7 +91,7 @@ const ReferralDetailsScreen = () => {
           data={data[selectedLevel]}
           keyExtractor={(_, index) => index.toString()}
           renderItem={renderItem}
-          contentContainerStyle={{ paddingBottom: 30 }}
+          contentContainerStyle={{ paddingBottom: hp('5%') }}
         />
       </View>
     </SafeAreaView>
@@ -105,35 +106,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#34A853',
-    paddingVertical: 30,
-    paddingHorizontal: 30
+    paddingVertical: hp('4%'),
+    paddingHorizontal: wp('6%'),
   },
   headerTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 10
+    gap: wp('2%'),
   },
   headerText: {
     fontSize: RFValue(20),
     fontWeight: '500',
-    color: '#fff'
+    color: '#fff',
   },
   tabsMainContainer: {
-    borderRadius: 4,
+    borderRadius: wp('2%'),
     backgroundColor: '#fff',
-    marginHorizontal: 20,
-    marginVertical: 10,
+    marginHorizontal: wp('5%'),
+    marginVertical: hp('1.5%'),
     elevation: 3,
   },
   tabs: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginBottom: 10,
-    backgroundColor: '#84D299'
+    marginBottom: hp('1%'),
+    backgroundColor: '#84D299',
   },
   tab: {
     alignItems: 'center',
-    paddingVertical: 10,
+    paddingVertical: hp('1.5%'),
     borderBottomWidth: 2,
     borderBottomColor: 'transparent',
   },
@@ -143,35 +144,39 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontWeight: 'bold',
     color: '#555',
+    fontSize: RFValue(14),
   },
   activeLabel: {
     color: '#34A853',
   },
   tabSubLabel: {
-    fontSize: 12,
+    fontSize: RFValue(12),
     color: '#999',
   },
   tableHeader: {
     flexDirection: 'row',
     backgroundColor: '#F1F1F1',
-    padding: 10,
-    borderRadius: 6,
-    marginBottom: 6,
+    paddingVertical: hp('1.2%'),
+    paddingHorizontal: wp('2%'),
+    borderRadius: wp('2%'),
+    marginBottom: hp('1%'),
   },
   headerCell: {
     flex: 1,
     fontWeight: 'bold',
-    fontSize: 12,
+    fontSize: RFValue(12),
+    textAlign: 'center',
   },
   row: {
     flexDirection: 'row',
-    paddingVertical: 10,
+    paddingVertical: hp('1.2%'),
     borderBottomWidth: 1,
     borderColor: '#eee',
+    paddingHorizontal: wp('2%'),
   },
   cell: {
     flex: 1,
-    fontSize: 13,
+    fontSize: RFValue(13),
     textAlign: 'center',
   },
 });

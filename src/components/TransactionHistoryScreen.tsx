@@ -4,12 +4,13 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 type TransactionType = 'all' | 'deposit' | 'withdraw' | 'bonus';
 
@@ -32,16 +33,22 @@ const TransactionHistoryScreen = () => {
     const navigation = useNavigation();
     const [selectedType, setSelectedType] = useState<TransactionType>('all');
 
-    const filteredTransactions = selectedType === 'all'
-        ? transactions
-        : transactions.filter(t => t.type.toLowerCase() === selectedType);
+    const filteredTransactions =
+        selectedType === 'all'
+            ? transactions
+            : transactions.filter(t => t.type.toLowerCase() === selectedType);
 
     const renderItem = ({ item }: { item: typeof transactions[number] }) => (
         <View style={styles.row}>
             <Text style={styles.cell}>{item.date}</Text>
             <Text style={styles.cell}>{item.type}</Text>
             <Text style={styles.cell}>{item.amount}</Text>
-            <Text style={[styles.cell, item.status === 'Pending' ? styles.pending : styles.completed]}>
+            <Text
+                style={[
+                    styles.cell,
+                    item.status === 'Pending' ? styles.pending : styles.completed,
+                ]}
+            >
                 {item.status}
             </Text>
         </View>
@@ -52,31 +59,34 @@ const TransactionHistoryScreen = () => {
             <View style={styles.header}>
                 <View style={styles.headerLeft}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Icon name='arrow-back' size={24} color='#fff' />
+                        <Icon name="arrow-back" size={RFValue(24)} color="#fff" />
                     </TouchableOpacity>
                     <Text style={styles.headerText}>Transaction History</Text>
                 </View>
                 <TouchableOpacity>
-                    <Icon name='settings' size={24} color='#fff' />
+                    <Icon name="settings" size={RFValue(24)} color="#fff" />
                 </TouchableOpacity>
             </View>
+
             <Text style={styles.sectionTitle}>All Transactions</Text>
+
             <View style={styles.container}>
                 <View style={styles.tabs}>
                     {filterTabs.map(tab => (
-                        <View style={styles.tabButtonContainer}>
+                        <View key={tab.key} style={styles.tabButtonContainer}>
                             <TouchableOpacity
-                                key={tab.key}
                                 style={[
                                     styles.tabButton,
                                     selectedType === tab.key && styles.activeTabButton,
                                 ]}
                                 onPress={() => setSelectedType(tab.key)}
                             >
-                                <Text style={[
-                                    styles.tabText,
-                                    selectedType === tab.key && styles.activeTabText,
-                                ]}>
+                                <Text
+                                    style={[
+                                        styles.tabText,
+                                        selectedType === tab.key && styles.activeTabText,
+                                    ]}
+                                >
                                     {tab.label}
                                 </Text>
                             </TouchableOpacity>
@@ -95,7 +105,7 @@ const TransactionHistoryScreen = () => {
                     data={filteredTransactions}
                     keyExtractor={(_, index) => index.toString()}
                     renderItem={renderItem}
-                    contentContainerStyle={{ paddingBottom: 30 }}
+                    contentContainerStyle={{ paddingBottom: hp('4%') }}
                 />
             </View>
         </SafeAreaView>
@@ -107,8 +117,8 @@ export default TransactionHistoryScreen;
 const styles = StyleSheet.create({
     header: {
         backgroundColor: '#34A853',
-        paddingVertical: 30,
-        paddingHorizontal: 30,
+        paddingVertical: hp('4%'),
+        paddingHorizontal: wp('6%'),
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -116,7 +126,7 @@ const styles = StyleSheet.create({
     headerLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10,
+        gap: wp('2%'),
     },
     headerText: {
         color: '#fff',
@@ -125,33 +135,34 @@ const styles = StyleSheet.create({
     },
     container: {
         backgroundColor: '#fff',
-        margin: 16,
-        marginTop: 0,
-        padding: 16,
+        marginHorizontal: wp('4%'),
+        padding: wp('4%'),
         borderRadius: 10,
         elevation: 4,
     },
     sectionTitle: {
         fontSize: RFValue(16),
         fontWeight: '400',
-        margin: 25,
+        marginVertical: hp('3%'),
+        marginHorizontal: wp('4%'),
         color: '#444',
     },
     tabs: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         borderRadius: 6,
-        padding: 8,
-        marginBottom: 10,
+        paddingVertical: hp('1%'),
+        marginBottom: hp('1.5%'),
     },
-    tabButtonContainer:{
-        backgroundColor:'#fff',
-        elevation:4,
-        borderRadius:4,
+    tabButtonContainer: {
+        backgroundColor: '#fff',
+        elevation: 4,
+        borderRadius: 4,
+        marginHorizontal: wp('0.5%'),
     },
     tabButton: {
-        paddingVertical: 6,
-        paddingHorizontal: 12,
+        paddingVertical: hp('1%'),
+        paddingHorizontal: wp('3%'),
         borderRadius: 4,
         backgroundColor: 'transparent',
     },
@@ -160,7 +171,7 @@ const styles = StyleSheet.create({
     },
     tabText: {
         color: '#555',
-        fontSize: 12,
+        fontSize: RFValue(12),
         fontWeight: '500',
     },
     activeTabText: {
@@ -169,25 +180,26 @@ const styles = StyleSheet.create({
     tableHeader: {
         flexDirection: 'row',
         backgroundColor: '#84D299',
-        padding: 10,
+        paddingVertical: hp('1.5%'),
+        paddingHorizontal: wp('2%'),
         borderRadius: 6,
-        marginBottom: 6,
+        marginBottom: hp('1%'),
     },
     headerCell: {
         flex: 1,
         fontWeight: 'bold',
-        fontSize: 12,
+        fontSize: RFValue(12),
         textAlign: 'left',
     },
     row: {
         flexDirection: 'row',
-        paddingVertical: 12,
+        paddingVertical: hp('1.5%'),
         borderBottomWidth: 1,
         borderColor: '#eee',
     },
     cell: {
         flex: 1,
-        fontSize: 13,
+        fontSize: RFValue(13),
         textAlign: 'left',
     },
     pending: {

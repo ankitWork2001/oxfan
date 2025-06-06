@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getPlansApi, getActiveInvestments, getInvestmentsHistory } from './investmentAPI';
+import { getPlansApi, getActiveInvestments, getInvestmentsHistory, subscribeInvestment } from './investmentAPI';
 
 export const getPlans = createAsyncThunk(
     'investment/getPlans',
@@ -39,6 +39,20 @@ export const fetchInvestmentsHistory = createAsyncThunk(
             return data;
         } catch (error) {
             return rejectWithValue(error.response?.data?.message || error.message);
+        }
+    }
+);
+
+export const getSubscribeInvestments = createAsyncThunk(
+    'investment/getSubscribeInvestments',
+    async ({ id, data }, { getState, rejectWithValue }) => {
+        try {
+            const token = getState().auth.token;
+            if (!token) throw new Error('No authentication token found');
+            const response = await subscribeInvestment(id, data, token);
+            return response.data;
+        } catch (error) {
+            return rejectWithValue(error.response?.message || error.message);
         }
     }
 );
