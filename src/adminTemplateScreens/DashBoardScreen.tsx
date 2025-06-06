@@ -7,16 +7,40 @@ import {
     TouchableOpacity,
     View,
     SafeAreaView,
+    Alert,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import AdminTemplateHeaderPart from '../components/AdminTemplateHeaderPart';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
+import { fetchDashboard } from '../store/features/adminDashboard/adminDashboardThunk';
 
 const DashBoardScreen = () => {
     const inset = useSafeAreaInsets();
     const { height, width } = Dimensions.get('window');
+    const dispatch = useDispatch<AppDispatch>();
+    const token = useSelector((state: RootState) => state.auth.token);
+    const { data, loading, error } = useSelector((state: RootState) => state.adminDashboard);
+    const user = useSelector((state) => state.auth.user);
+    const adminName = user?.name;
+
+    useEffect(() => {
+        if (token) {
+            dispatch(fetchDashboard())
+                .unwrap()
+                .then((data) => {
+                    console.log('fetchDashboard successful');
+                })
+                .catch((err) => console.error('fetchUser failed:', err));
+        }
+        else {
+            console.log("No token available yet, skipping fetch");
+        }
+    }, [dispatch, token])
+
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -24,7 +48,7 @@ const DashBoardScreen = () => {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={[styles.scrollViewContent, { paddingBottom: inset.bottom + 50 }]}
             >
-                <AdminTemplateHeaderPart name='Hii Rohan,' />
+                <AdminTemplateHeaderPart name={`Hii ${adminName}`} />
                 <View style={styles.dashboardWrapper}>
                     <View style={[styles.buttonsContainer, { bottom: height * 0.038 }]}>
                         <TouchableOpacity style={styles.buttons}>
@@ -50,7 +74,7 @@ const DashBoardScreen = () => {
                                     <Icon name="group" size={36} color="#007A8A" />
                                     <View style={styles.textContainer}>
                                         <Text style={styles.label}>Total Users</Text>
-                                        <Text style={styles.value}>12,432</Text>
+                                        <Text style={styles.value}>{data?.totalUsers}</Text>
                                     </View>
                                 </View>
                                 <Text style={styles.ongoingDashboardCardText}>● +153 new today</Text>
@@ -63,7 +87,7 @@ const DashBoardScreen = () => {
                                     <Icon name="upload" size={45} color="#D4A800" />
                                     <View style={styles.textContainer}>
                                         <Text style={styles.label}>Total Deposits</Text>
-                                        <Text style={styles.value}>$542,100</Text>
+                                        <Text style={styles.value}>{data?.totalDeposits}</Text>
                                     </View>
                                 </View>
                                 <Text style={styles.ongoingDashboardCardText}>● +$12,300 today</Text>
@@ -78,7 +102,7 @@ const DashBoardScreen = () => {
                                     <Icon name="download" size={45} color="#8B5CF6" />
                                     <View style={styles.textContainer}>
                                         <Text style={styles.label}>Total Withdraws</Text>
-                                        <Text style={styles.value}>$342,100</Text>
+                                        <Text style={styles.value}>{data?.totalWithdrawals}</Text>
                                     </View>
                                 </View>
                                 <Text style={styles.ongoingDashboardCardText}>● $8,100 withdrawn today</Text>
@@ -91,7 +115,7 @@ const DashBoardScreen = () => {
                                     <Icon name="group-add" size={45} color="#D94A4A" />
                                     <View style={styles.textContainer}>
                                         <Text style={styles.label}>Total Referrals</Text>
-                                        <Text style={styles.value}>2,100</Text>
+                                        <Text style={styles.value}>{data?.totalReferrals}</Text>
                                     </View>
                                 </View>
                                 <Text style={styles.ongoingDashboardCardText}>● +78 new today</Text>
@@ -295,7 +319,7 @@ const styles = StyleSheet.create({
         fontWeight: '400'
     },
     title: {
-        fontSize: 20,
+        fontSize: RFValue(20),
         fontWeight: '600',
         marginBottom: 12,
     },
@@ -327,12 +351,12 @@ const styles = StyleSheet.create({
         borderRadius: 4,
     },
     label: {
-        fontSize: 14,
+        fontSize: RFValue(14),
         fontWeight: '500',
         color: '#000',
     },
     percentage: {
-        fontSize: 13,
+        fontSize: RFValue(13),
         fontWeight: '400',
         color: '#000',
     },

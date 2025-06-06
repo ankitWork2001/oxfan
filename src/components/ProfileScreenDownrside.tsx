@@ -1,49 +1,51 @@
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React from 'react'
-import Icon from 'react-native-vector-icons/MaterialIcons'
+import { Alert, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
 import { logoutUser } from '../store/features/auth/authThunk';
 import { useDispatch } from 'react-redux';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const ProfileScreenDownrside = () => {
     const navigation = useNavigation();
     const dispatch = useDispatch();
 
-
     const handleLogout = () => {
         dispatch(logoutUser());
-        Alert.alert('Log Out Successfully');
+        ToastAndroid.show('Logged Out Successfully!', ToastAndroid.SHORT);
     };
+
     return (
         <View style={styles.cardContainer}>
             <View style={styles.card}>
-                <TouchableOpacity onPress={() => { navigation.navigate('PersonalDetails') }} style={styles.option}>
-                    <Icon name="person" size={24} color="#000" style={styles.icon} />
+                <TouchableOpacity onPress={() => navigation.navigate('PersonalDetails')} style={styles.option}>
+                    <Icon name="person" size={RFValue(24)} color="#000" style={styles.icon} />
                     <Text style={styles.label}>Personal Details</Text>
                 </TouchableOpacity>
                 <View style={styles.separator} />
-                <TouchableOpacity onPress={() => { navigation.navigate('WalletInfo') }} style={styles.option}>
-                    <Icon name="wallet" size={24} color="#000" style={styles.icon} />
+                <TouchableOpacity onPress={() => navigation.navigate('WalletInfo')} style={styles.option}>
+                    <Icon name="wallet" size={RFValue(24)} color="#000" style={styles.icon} />
                     <Text style={styles.label}>Wallet Info</Text>
                 </TouchableOpacity>
                 <View style={styles.separator} />
                 <TouchableOpacity style={styles.option}>
-                    <Icon name="star" size={24} color="#000" style={styles.icon} />
+                    <Icon name="star" size={RFValue(24)} color="#000" style={styles.icon} />
                     <Text style={styles.label}>Membership Level</Text>
                 </TouchableOpacity>
                 <View style={styles.separator} />
                 <TouchableOpacity style={styles.option}>
-                    <Icon name="description" size={24} color="#000" style={styles.icon} />
+                    <Icon name="description" size={RFValue(24)} color="#000" style={styles.icon} />
                     <Text style={styles.label}>Agreement</Text>
                 </TouchableOpacity>
                 <View style={styles.separator} />
-                <TouchableOpacity onPress={() => { navigation.navigate('TransactionHistory') }} style={styles.option}>
-                    <Icon name="history" size={24} color="#000" style={styles.icon} />
+                <TouchableOpacity onPress={() => navigation.navigate('TransactionHistory')} style={styles.option}>
+                    <Icon name="history" size={RFValue(24)} color="#000" style={styles.icon} />
                     <Text style={styles.label}>Transaction History</Text>
                 </TouchableOpacity>
                 <View style={styles.separator} />
-                <TouchableOpacity onPress={() => { navigation.navigate('Settings') }} style={styles.option}>
-                    <Icon name="settings" size={24} color="#000" style={styles.icon} />
+                <TouchableOpacity onPress={() => navigation.navigate('Settings')} style={styles.option}>
+                    <Icon name="settings" size={RFValue(24)} color="#000" style={styles.icon} />
                     <Text style={styles.label}>Settings</Text>
                 </TouchableOpacity>
             </View>
@@ -52,33 +54,34 @@ const ProfileScreenDownrside = () => {
                 <Text style={styles.signOutText}>Log Out</Text>
             </TouchableOpacity>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     cardContainer: {
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        marginTop: hp('0%'),
     },
     card: {
         backgroundColor: '#fff',
         borderRadius: 8,
         elevation: 4,
-        paddingVertical: 8,
-        paddingHorizontal: 12,
-        width: "90%"
+        paddingVertical: hp('1.5%'),
+        paddingHorizontal: wp('4%'),
+        width: wp('90%'),
     },
     option: {
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 12,
-        marginVertical: 3
+        paddingVertical: hp('1.5%'),
+        marginVertical: hp('0.5%'),
     },
     icon: {
-        marginRight: 20
+        marginRight: wp('5%'),
     },
     label: {
-        fontSize: 16,
+        fontSize: RFValue(14),
         color: '#000',
     },
     separator: {
@@ -87,17 +90,17 @@ const styles = StyleSheet.create({
     },
     signOutButton: {
         backgroundColor: '#FF8800',
-        paddingVertical: 10,
+        paddingVertical: hp('1.5%'),
+        paddingHorizontal: wp('15%'),
         borderRadius: 6,
-        marginTop: 40,
+        marginTop: hp('5%'),
         alignSelf: 'center',
-        paddingHorizontal: 60,
     },
     signOutText: {
         color: '#fff',
-        fontSize: 16,
+        fontSize: RFValue(16),
         fontWeight: '500',
     },
-})
+});
 
 export default ProfileScreenDownrside;

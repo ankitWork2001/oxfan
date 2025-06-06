@@ -7,6 +7,11 @@ import SpinLogsScreen from '../adminTemplateScreens/SpinLogsScreen';
 import DepositsScreen from '../adminTemplateScreens/DepositsScreen';
 import WithdrawalsScreen from '../adminTemplateScreens/WithdrawalsScreen';
 import AdminSettingsScreen from '../adminTemplateScreens/AdminSettingsScreen';
+import PlansScreen from '../adminTemplateScreens/PlansScreen';
+import UserViewScreen from '../adminTemplateScreens/UserViewScreen';
+import WithdrawApprovals from '../adminTemplateScreens/WithdrawApprovals';
+import AddNewInvestments from '../adminTemplateScreens/AddNewInvestments';
+import UpdatePlan from '../adminTemplateScreens/UpdatePlan';
 
 
 const Stack = createNativeStackNavigator();
@@ -21,6 +26,11 @@ const AdminStackNavigator = () => {
             <Stack.Screen name="Deposits" component={DepositsScreen} />
             <Stack.Screen name="Withdrawals" component={WithdrawalsScreen} />
             <Stack.Screen name="Settings" component={AdminSettingsScreen} />
+            <Stack.Screen name="PlansScreen" component={PlansScreen} />
+            <Stack.Screen name="UserView" component={UserViewScreen} />
+            <Stack.Screen name="WithdrawApprovals" component={WithdrawApprovals} />
+            <Stack.Screen name="AddNewInvestments" component={AddNewInvestments} />
+            <Stack.Screen name="UpdatePlan" component={UpdatePlan} />
         </Stack.Navigator>
     );
 };

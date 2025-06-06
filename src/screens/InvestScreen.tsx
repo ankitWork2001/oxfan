@@ -1,12 +1,16 @@
-import { Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Alert, Dimensions, Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Slider from '@react-native-community/slider';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchActiveInvestments, fetchInvestmentsHistory, getPlans } from '../store/features/investment/investmentThunk';
+import { fetchActiveInvestments, fetchInvestmentsHistory, getPlans, getSubscribeInvestments } from '../store/features/investment/investmentThunk';
 import { AppDispatch, RootState } from '../store/store';
+import { useNavigation } from '@react-navigation/native';
+import { getUserDetails } from '../store/features/auth/authThunk';
+import { fetchWalletBalance } from '../store/features/wallet/walletThunk';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 interface InvestmentPlan {
   _id?: string;
@@ -56,10 +60,15 @@ const InvestScreen = () => {
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch<AppDispatch>();
   const [investmentHistory, setInvestmentHistory] = useState<InvestmentHistoryItem[]>([]);
+  const navigation = useNavigation();
+  const [showBalanceModal, setShowBalanceModal] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<InvestmentPlan | null>(null);
 
   const { activeInvestments, investmentPlans, plansLoading, plansError } = useSelector(
     (state: RootState) => state.investment
   );
+  const { basicUser, userDetails } = useSelector((state: RootState) => state.auth);
+  const [userBalance, setUserBalance] = useState<number>(0); // Replace this with actual data from Redux or API
 
   useEffect(() => {
     dispatch(getPlans())
@@ -91,19 +100,87 @@ const InvestScreen = () => {
       .catch((err: Error) => {
         console.log('Error fetching history:', err);
       });
-  }, [dispatch]);
+
+    dispatch(fetchWalletBalance())
+      .unwrap()
+      .then((data) => {
+        console.log("wallet data:", data.wallet.balance);
+        setUserBalance(data?.wallet?.balance)
+      })
+      .catch((err) => {
+        console.log('Error fetching Wallet:', err);
+      })
+    if (basicUser?._id && !userDetails) {
+      dispatch(getUserDetails(basicUser._id));
+    }
+  }, [dispatch, basicUser, userDetails]);
+
+  const handleSubscribe = () => {
+    if (!selectedPlan || !basicUser) return;
+
+    if (userBalance < (selectedPlan.minAmount ?? 0)) {
+      Alert.alert("Insufficient balance! Please deposit funds.");
+      navigation.navigate('Deposit'); // Replace 'DepositScreen' with your actual route name
+      return;
+    }
+
+    const today = new Date();
+    const duration = selectedPlan.durationDays ?? 0;
+    const endDateObj = new Date(today);
+    endDateObj.setDate(endDateObj.getDate() + duration);
+
+    const todayDate = new Date().toISOString().split('T')[0]; // format: YYYY-MM-DD
+    const endDate = endDateObj.toISOString().split('T')[0];
+
+    const data = {
+      userId: basicUser._id,
+      planId: selectedPlan._id,
+      amount: selectedPlan.minAmount, // get from user input or minimum
+      startDate: todayDate,
+      endDate: endDate, // calculated end date
+      status: 'active',
+    };
+
+    dispatch(getSubscribeInvestments({ id: selectedPlan._id, data }))
+      .unwrap()
+      .then(res => {
+        console.log('Subscription success:', res);
+        Alert.alert("Success", "Investment successfully purchased");
+        setShowBalanceModal(false);
+        dispatch(fetchActiveInvestments());
+        // Fetch investments history
+        dispatch(fetchInvestmentsHistory())
+          .unwrap()
+          .then(history => {
+            console.log('Updated investment history:', history);
+            if (history.investments) {
+              setInvestmentHistory(history.investments);
+            }
+          })
+          .catch(err => {
+            console.error('Failed to fetch updated investment history:', err);
+          });
+      })
+      .catch(err => {
+        console.error('Subscription failed:', err);
+        Alert.alert(`Subscription failed: ${err}`);
+      });
+  }
 
   return (
     <SafeAreaView style={styles.MainContainer}>
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: insets.bottom + 100 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingBottom: insets.bottom + hp('10%')
+        }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ paddingTop: insets.top }}>
           <View style={styles.headerContainer}>
             <Text style={styles.headerText}>Choose Your Investment Plan</Text>
-            <TouchableOpacity>
-              <Icon name='notifications' size={20} color='#fff' />
+            <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
+              <Icon name='notifications' size={RFValue(20)} color='#fff' />
             </TouchableOpacity>
           </View>
           {plansLoading ? (
@@ -125,8 +202,9 @@ const InvestScreen = () => {
               const planImage =
                 planNameLower.includes('gold') ? require('../assests/InvetManGoldPlanImage.png') :
                   planNameLower.includes('premium') ? require('../assests/InvetManPremiumPlanImage.png') :
-                    planNameLower.includes('starter') ? require('../assests/investMan.png') :
-                      require('../assests/investMan.png'); // default image
+                    planNameLower.includes('ultra') ? require('../assests/InvetManPremiumPlanImage.png') :
+                      planNameLower.includes('starter') ? require('../assests/investMan.png') :
+                        require('../assests/investMan.png'); // default image
 
               return (
                 <View key={plan._id || index} style={styles.card}>
@@ -147,7 +225,14 @@ const InvestScreen = () => {
                     </View>
                   </View>
                   <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: planColor }]}>
+                    <TouchableOpacity
+                      style={[styles.button, { backgroundColor: planColor }]}
+                      onPress={() => {
+                        console.log('Invest Now clicked:', plan);
+                        setSelectedPlan(plan);
+                        setShowBalanceModal(true);
+                      }}
+                    >
                       <Text style={styles.buttonText}>Invest Now</Text>
                     </TouchableOpacity>
                   </View>
@@ -179,7 +264,13 @@ const InvestScreen = () => {
                 return (
                   <View
                     key={investment._id || index}
-                    style={[styles.ongoingInvestmentCard, { backgroundColor }]}
+                    style={[styles.ongoingInvestmentCard, {
+                      backgroundColor,
+                      width: wp('55%'),
+                      marginHorizontal: wp('4%'),
+                      padding: wp('4%'),
+                    }]}
+
                   >
                     <View style={styles.headerRow}>
                       <Icon name="schedule" size={14} color="#fff" />
@@ -263,6 +354,33 @@ const InvestScreen = () => {
           </View>
         </View>
       </ScrollView>
+      {showBalanceModal && selectedPlan && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalBalanceContainer}>
+              <Text style={styles.modalTitle}>Your Balance:</Text>
+              <Text style={styles.modalBalance}>${userBalance}</Text>
+            </View>
+            <View style={{ marginLeft: 30, marginBottom: 10 }}>
+              <Text style={styles.modalSubtitle}>Plan Name: {selectedPlan.name}</Text>
+              <Text style={styles.modalDetail}>ROI: {selectedPlan.roiPercent}%</Text>
+              <Text style={styles.modalDetail}>Min Amount: ₹{selectedPlan.minAmount}</Text>
+              <Text style={styles.modalDetail}>Duration: {selectedPlan.durationDays} Days</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.modalInvestButton}
+              onPress={handleSubscribe}>
+              <Text style={styles.modalInvestButtonText}>Invest Now</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.modalCancleButton} onPress={() => setShowBalanceModal(false)}>
+              <Text style={styles.modalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      )}
+
+
     </SafeAreaView>
   )
 }
@@ -276,11 +394,12 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: '#34A853',
-    width: "100%",
-    height: 80,
+    width: '100%',
+    height: hp('10%'),
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-evenly'
+    justifyContent: 'space-between',
+    paddingHorizontal: wp('5%'),
   },
   headerText: {
     color: '#fff',
@@ -289,9 +408,9 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#fff',
-    borderRadius: 10,
-    marginVertical: 15,
-    marginHorizontal: 25,
+    borderRadius: wp('2.5%'),
+    marginVertical: hp('2%'),
+    marginHorizontal: wp('6%'),
     elevation: 3,
     shadowColor: '#000',
     shadowOpacity: 0.1,
@@ -300,9 +419,9 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   borderBar: {
-    width: 6,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
+    width: wp('1.5%'),
+    borderTopLeftRadius: wp('2.5%'),
+    borderBottomLeftRadius: wp('2.5%'),
     position: 'absolute',
     height: '100%',
     left: 0,
@@ -312,61 +431,62 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     flex: 1,
+    paddingVertical: hp('1.5%'),
   },
   textSection: {
     flex: 1,
-    marginLeft: 25
+    marginLeft: wp('6%')
   },
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: hp('1%'),
   },
   title: {
     fontSize: RFValue(14),
-    fontWeight: 500,
+    fontWeight: '500',
     color: '#000',
   },
   text: {
     fontSize: RFValue(10),
     color: '#444',
+    marginBottom: hp('0.5%'),
   },
   buttonContainer: {
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   button: {
     alignItems: 'center',
-    marginBottom: 10,
-    paddingVertical: 10,
-    borderRadius: 6,
-    width: '85%',
+    marginBottom: hp('1%'),
+    paddingVertical: hp('1%'),
+    borderRadius: wp('1.5%'),
+    width: wp('80%'),
   },
   buttonText: {
     color: '#fff',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: RFValue(14),
   },
   imageContainer: {
-    marginRight: 20
+    marginRight: wp('5%')
   },
   image: {
-    width: 100,
-    height: 100,
+    width: wp('25%'),
+    height: hp('12%'),
     resizeMode: 'contain',
   },
   investmentHeaderText: {
-    margin: 15,
+    marginVertical: hp('2%'),
+    marginHorizontal: wp('4%'),
     fontSize: RFValue(20),
-    fontWeight: 500
+    fontWeight: '500'
   },
-  horizontalScrollContainer: {},
+  horizontalScrollContainer: {
+    marginBottom: hp('1%'),
+  },
   ongoingInvestmentCard: {
-    width: 210,
-    borderRadius: 6,
-    padding: 15,
-    marginVertical: 10,
-    marginHorizontal: 20,
+    borderRadius: wp('1.5%'),
     shadowRadius: 4,
     elevation: 5,
     shadowColor: '#000',
@@ -374,7 +494,7 @@ const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: hp('0.75%'),
   },
   planTitle: {
     color: '#fff',
@@ -383,59 +503,62 @@ const styles = StyleSheet.create({
   },
   label: {
     color: '#fff',
-    fontSize: 10,
-    fontWeight: 400
+    fontSize: RFValue(10),
+    fontWeight: '400'
   },
   slider: {
     width: '100%',
-    height: 15,
-    marginVertical: 5,
+    height: hp('2%'),
+    marginVertical: hp('0.75%'),
   },
   detail: {
     color: '#fff',
-    fontSize: 13,
-    marginBottom: 3,
+    fontSize: RFValue(13),
+    marginBottom: hp('0.5%'),
   },
   noInvestmentTextContainer: {
-    marginHorizontal: width * 0.17,
-    marginVertical: width * 0.07
+    marginHorizontal: wp('17%'),
+    marginVertical: hp('7%')
   },
   noInvestmentText: {
     fontSize: RFValue(20),
     fontWeight: 'bold'
   },
   InvestmentTablecontainer: {
-    borderRadius: 4,
+    borderRadius: wp('1%'),
     backgroundColor: '#fff',
-    marginHorizontal: 20,
-    marginVertical: 10,
+    marginHorizontal: wp('5%'),
+    marginVertical: hp('1.5%'),
     elevation: 3,
   },
   InvestmentTableheaderRow: {
     flexDirection: 'row',
     backgroundColor: '#34A853',
-    padding: 10,
-    borderTopLeftRadius: 6,
-    borderTopRightRadius: 6,
+    paddingVertical: hp('1.5%'),
+    paddingHorizontal: wp('2.5%'),
+    borderTopLeftRadius: wp('1.5%'),
+    borderTopRightRadius: wp('1.5%'),
   },
   InvestmentTableheaderText: {
     flex: 1,
     color: '#fff',
     fontWeight: '700',
-    textAlign: 'center',
+    textAlign: 'left',
+    fontSize: RFValue(12),
   },
   dataRow: {
     flexDirection: 'row',
-    paddingVertical: 8,
-    paddingHorizontal: 10,
+    paddingVertical: hp('1%'),
+    paddingHorizontal: wp('2.5%'),
   },
   cellText: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: 'left',
     fontWeight: '600',
+    fontSize: RFValue(12),
   },
   noDataRow: {
-    paddingVertical: 20,
+    paddingVertical: hp('2.5%'),
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f5f5f5',
@@ -443,8 +566,81 @@ const styles = StyleSheet.create({
     borderBottomColor: '#ccc',
   },
   noDataText: {
-    fontSize: 16,
+    fontSize: RFValue(16),
     color: '#888',
     fontStyle: 'italic',
+  },
+  modalOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: wp('2.5%'), // ~10px on standard devices
+    padding: wp('5%'), // ~20px on standard devices
+    width: wp('80%'), // 80% of screen width
+    height: hp('40%'), // 40% of screen height
+    alignItems: 'flex-start',
+    elevation: 5,
+    justifyContent: 'center'
+  },
+  modalBalanceContainer: {
+    flexDirection: 'row',
+    gap: wp('1.25%'),
+    marginBottom: hp('1.25%'),
+    marginLeft: wp('5%'),
+    justifyContent: 'center',
+    alignContent: 'center'
+  },
+  modalTitle: {
+    fontSize: RFValue(18),
+    fontWeight: 'bold',
+    marginBottom: hp('1.25%'),
+  },
+  modalBalance: {
+    fontSize: RFValue(24),
+    fontWeight: 'bold',
+    color: '#34A853',
+  },
+  modalSubtitle: {
+    fontSize: RFValue(16),
+    marginBottom: hp('1.25%'),
+  },
+  modalInvestButton: {
+    backgroundColor: '#34A853',
+    paddingVertical: hp('1.5%'),
+    paddingHorizontal: wp('5%'),
+    borderRadius: wp('1.5%'),
+    width: wp('60%'),
+    marginBottom: hp('1.25%'),
+    marginTop: hp('2.5%'),
+    alignSelf: 'center'
+  },
+  modalCancleButton: {
+    marginTop: hp('1.25%'),
+    alignSelf: 'center'
+  },
+  modalInvestButtonText: {
+    textAlign:'center',
+    color: '#fff',
+    fontSize: RFValue(14),
+    fontWeight: '600',
+  },
+  modalCancelText: {
+    color: '#D32F2F',
+    fontSize: RFValue(16),
+    fontWeight: '500',
+  },
+  modalDetail: {
+    fontSize: RFValue(14),
+    color: '#000',
+    marginBottom: hp('0.75%'),
   },
 })

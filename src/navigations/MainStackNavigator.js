@@ -10,6 +10,7 @@ import SignInScreen from '../screens/SignInScreen';
 import LoginScreen from '../screens/LoginScreen';
 import WithdrawalScreen from '../components/WithdrawalScreen';
 import DepositScreen from '../components/DepositScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ const MainStackNavigator = () => {
       <Stack.Screen name="SignUp" component={SignInScreen} />
       <Stack.Screen name="Deposit" component={DepositScreen} />
       <Stack.Screen name="Withdraw" component={WithdrawalScreen} />
+      <Stack.Screen name="Notifications" component={NotificationsScreen} />
     </Stack.Navigator>
   );
 };

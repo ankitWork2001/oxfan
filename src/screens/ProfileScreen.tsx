@@ -8,30 +8,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import ProfileScreenUpperside from '../components/ProfileScreenUpperside';
 import ProfileScreenDownrside from '../components/ProfileScreenDownrside';
-
-
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const ProfileScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
   const { user } = useSelector((state) => state.auth);
 
-  const { height } = Dimensions.get('window');
- 
-
-
-
   return (
     <SafeAreaView style={styles.MainContainer}>
       {user ? (
         <ScrollView
-          contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+          contentContainerStyle={{ paddingBottom: insets.bottom + hp('12%') }}
           showsVerticalScrollIndicator={false}
         >
           <ProfileScreenUpperside />
@@ -39,9 +34,7 @@ const ProfileScreen = () => {
         </ScrollView>
       ) : (
         <View style={styles.centered}>
-          <Text style={styles.promptText}>
-            You are not logged in.
-          </Text>
+          <Text style={styles.promptText}>You are not logged in.</Text>
           <TouchableOpacity
             style={styles.loginBtn}
             onPress={() => navigation.navigate('Login')}
@@ -65,25 +58,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 30,
+    paddingHorizontal: wp('8%'),
   },
   promptText: {
-    fontSize: 18,
+    fontSize: RFValue(16),
     fontWeight: '500',
     color: '#444',
-    marginTop: 20,
+    marginTop: hp('2%'),
     textAlign: 'center',
   },
   loginBtn: {
-    marginTop: 20,
+    marginTop: hp('2%'),
     backgroundColor: '#FF8800',
-    paddingHorizontal: 25,
-    paddingVertical: 12,
+    paddingHorizontal: wp('8%'),
+    paddingVertical: hp('1.8%'),
     borderRadius: 8,
   },
   loginText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: RFValue(14),
     fontWeight: 'bold',
   },
 });

@@ -1,16 +1,22 @@
-import { StyleSheet, View } from 'react-native';
 import React from 'react';
+import { StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SpinScreen from '../screens/SpinScreen';
 import ReferralScreen from '../screens/ReferralScreen';
 import InvestScreen from '../screens/InvestScreen';
-import Icon from 'react-native-vector-icons/MaterialIcons'; // or any icon library you use
+import { RootState } from '../store/store';
 
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
+    const token = useSelector((state: RootState) => state.auth.token);
+    const isLoggedIn = !!token; // or !!state.auth.user
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({
@@ -23,7 +29,7 @@ const TabNavigator = () => {
                     fontSize: 10,
                     marginBottom: 5,
                 },
-                tabBarIcon: ({ focused, color, size }) => {
+                tabBarIcon: ({ focused }) => {
                     let iconName = '';
 
                     switch (route.name) {
@@ -54,8 +60,14 @@ const TabNavigator = () => {
         >
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Spin" component={SpinScreen} />
-            <Tab.Screen name="Invest" component={InvestScreen} />
-            <Tab.Screen name="Referral" component={ReferralScreen} />
+
+            {isLoggedIn && (
+                <>
+                    <Tab.Screen name="Invest" component={InvestScreen} />
+                    <Tab.Screen name="Referral" component={ReferralScreen} />
+                </>
+            )}
+
             <Tab.Screen name="Profile" component={ProfileScreen} />
         </Tab.Navigator>
     );

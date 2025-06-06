@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getPlans, fetchActiveInvestments, fetchInvestmentsHistory } from "./investmentThunk";
+import { getPlans, fetchActiveInvestments, fetchInvestmentsHistory, getSubscribeInvestments } from "./investmentThunk";
 
 const investmentSlice = createSlice({
     name: "investment",
@@ -14,10 +14,15 @@ const investmentSlice = createSlice({
         activeLoading: false,
         activeError: null,
 
-        // Active Investments
+        //  Investment History
         investmentsHistory: [],
         historyLoading: false,
         historyError: null,
+
+        // Subscribe Investments
+        subscribeInvestmentResult: null,
+        subscribeLoading: false,
+        subscribeError: null,
 
         // General loading/error (optional)
         loading: false,
@@ -66,18 +71,36 @@ const investmentSlice = createSlice({
             .addCase(fetchInvestmentsHistory.pending, (state) => {
                 state.historyLoading = true;
                 state.historyError = null;
-                state.loading = true; 
+                state.loading = true;
             })
             .addCase(fetchInvestmentsHistory.fulfilled, (state, action) => {
                 state.historyLoading = false;
                 state.investmentsHistory = action.payload;
-                state.loading = false; 
+                state.loading = false;
             })
             .addCase(fetchInvestmentsHistory.rejected, (state, action) => {
                 state.historyLoading = false;
                 state.historyError = action.payload || "Failed to fetch investments history";
                 state.loading = false;
-                state.error = action.payload || "Failed to fetch investments history"; 
+                state.error = action.payload || "Failed to fetch investments history";
+            })
+
+            // Handle getSubscribeInvestments actions
+            .addCase(getSubscribeInvestments.pending, (state) => {
+                state.subscribeLoading = true;
+                state.subscribeError = null;
+                state.loading = true;
+            })
+            .addCase(getSubscribeInvestments.fulfilled, (state, action) => {
+                state.subscribeLoading = false;
+                state.subscribeInvestmentResult = action.payload;
+                state.loading = false;
+            })
+            .addCase(getSubscribeInvestments.rejected, (state, action) => {
+                state.subscribeLoading = false;
+                state.subscribeError = action.payload || "Failed to subscribe to investment";
+                state.loading = false;
+                state.error = action.payload || "Failed to subscribe to investment";
             });
     },
 });

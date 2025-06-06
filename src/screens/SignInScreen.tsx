@@ -5,21 +5,21 @@ import {
     SafeAreaView,
     TextInput,
     TouchableOpacity,
-    Dimensions,
     Image,
     Alert,
     ScrollView,
-    ActivityIndicator
+    ActivityIndicator,
 } from 'react-native';
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { RFValue } from 'react-native-responsive-fontsize';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { signInUser } from '../store/features/auth/authThunk';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
+import SignInLoginHeadPart from '../components/SignInLoginHeadPart';
 
-const { height, width } = Dimensions.get('window');
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { RFValue } from 'react-native-responsive-fontsize';
 
 const SignInScreen: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -28,7 +28,7 @@ const SignInScreen: React.FC = () => {
     const [name, setName] = useState<string>('');
     const [showPassword, setShowPassword] = useState(false);
     const [password, setPassword] = useState<string>('');
-    const [loading, setLoading] = useState(false); // Add loading state
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
     const { error } = useSelector((state: RootState) => state.auth);
     const navigation = useNavigation<NavigationProp<any>>();
@@ -37,56 +37,22 @@ const SignInScreen: React.FC = () => {
         if (!name || !email || !password || !mobile) {
             return Alert.alert('Error', 'Please enter all credentials');
         }
-        console.log("Signing in with:", { username, name, email, password, mobile }); // Debugging log
         setLoading(true);
         try {
-            // Use unwrap to get the result or throw an error
             await dispatch(signInUser({ username, name, email, password, mobile })).unwrap();
             navigation.navigate('Login');
-            Alert.alert('SignUp Successfull');
-        } catch (err) {
-            console.error("Sign In Error:", err); // Log the error for debugging
-            Alert.alert("Sign Up Failed", err.message || 'Sign Up failed');
+            Alert.alert('SignUp Successful');
+        } catch (err: any) {
+            Alert.alert('Sign Up Failed', err.message || 'Sign Up failed');
         } finally {
             setLoading(false);
         }
     };
 
-
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
-                <SafeAreaView>
-                    <View style={styles.mainContainer}>
-                        <Image
-                            source={require('../assests/loginSiginBacckgroundImage.png')}
-                            style={styles.image}
-                        />
-                        <Image
-                            style={[styles.image, { top: height * -0.45 }]}
-                            source={require('../assests/leftCoins.png')}
-                        />
-                        <Image
-                            style={[styles.image, { top: height * -0.75, left: width * 0.4 }]}
-                            source={require('../assests/rightCoins.png')}
-                        />
-                        <View style={[styles.loginAndCreateAccountContainer, { top: height * 0.09 }]}>
-                            <View style={styles.loginArrowBackContain}>
-                                <TouchableOpacity
-                                    onPress={() => navigation.goBack()}
-                                >
-                                    <Icon
-                                        style={styles.BackIcon}
-                                        name="arrow-back"
-                                        size={20}
-                                        color="#000000"
-                                    />
-                                </TouchableOpacity>
-                                <Text style={styles.loginText}>Sign Up</Text>
-                            </View>
-                        </View>
-                    </View>
-                </SafeAreaView>
+            <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: hp('10%') }}>
+                <SignInLoginHeadPart name={'Sign Up'} />
 
                 <View style={styles.body}>
                     <Text style={styles.welcomeText}>Welcome!</Text>
@@ -118,6 +84,7 @@ const SignInScreen: React.FC = () => {
                         keyboardType="email-address"
                         autoCapitalize="none"
                     />
+
                     <Text style={styles.label}>Mobile</Text>
                     <TextInput
                         placeholder="Mobile"
@@ -137,28 +104,13 @@ const SignInScreen: React.FC = () => {
                             autoCorrect={false}
                             secureTextEntry={!showPassword}
                         />
-                        <TouchableOpacity
-                            onPress={() => setShowPassword(prev => !prev)}
-                        >
-                            <Icon
-                                style={[styles.icon, { right: width * 0.01, top: height * 0.008 }]}
-                                name={showPassword ? "visibility-off" : "visibility"}
-                                size={18}
-                                color="#000"
-                            />
+                        <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)} style={styles.eyeIcon} activeOpacity={0.7}>
+                            <Icon name={showPassword ? 'visibility-off' : 'visibility'} size={RFValue(18)} color="#000" />
                         </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity style={styles.forgotPassword}>
-                        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                    </TouchableOpacity>
-
                     <TouchableOpacity onPress={handleSignin} style={styles.loginButton} disabled={loading}>
-                        {loading ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={styles.loginButtonText}>Sign Up</Text>
-                        )}
+                        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.loginButtonText}>Sign Up</Text>}
                     </TouchableOpacity>
 
                     <Text style={styles.orText}>Or</Text>
@@ -171,22 +123,13 @@ const SignInScreen: React.FC = () => {
 
                     <View style={styles.socialIconContainer}>
                         <TouchableOpacity style={styles.button}>
-                            <Image
-                                style={styles.socialIcon}
-                                source={require('../assests/googleLogo.png')}
-                            />
+                            <Image style={styles.socialIcon} source={require('../assests/googleLogo.png')} />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button}>
-                            <Image
-                                style={styles.socialIcon}
-                                source={require('../assests/appleLogo.png')}
-                            />
+                            <Image style={styles.socialIcon} source={require('../assests/appleLogo.png')} />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button}>
-                            <Image
-                                style={styles.socialIcon}
-                                source={require('../assests/facebookLogo.png')}
-                            />
+                            <Image style={styles.socialIcon} source={require('../assests/facebookLogo.png')} />
                         </TouchableOpacity>
                     </View>
 
@@ -204,113 +147,85 @@ const SignInScreen: React.FC = () => {
 
 export default SignInScreen;
 
-
 const styles = StyleSheet.create({
-    mainContainer: {
-        width: "100%",
-        height: Dimensions.get("window").height * 0.35,
-        position: 'relative',
-    },
-    image: {
-        resizeMode: 'contain',
-    },
-    loginAndCreateAccountContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        position: 'absolute',
-        width: "100%",
-        paddingHorizontal: 20
-    },
-    loginArrowBackContain: {
-        flexDirection: "row",
-        alignItems: "center",
-        gap: 10,
-    },
-    BackIcon: {
-        fontSize: RFValue(22),
-        color: "#FFFFFF"
-    },
-    loginText: {
-        fontSize: RFValue(20),
-        fontWeight: '400',
-        color: "#FFFFFF"
-    },
     container: {
+        flex: 1,
         backgroundColor: '#fff',
     },
     body: {
-        padding: 30,
+        paddingHorizontal: wp('7%'),
+        paddingVertical: hp('3%'),
         backgroundColor: '#fff',
-        borderTopLeftRadius: 25,
-        borderTopRightRadius: 25,
-        marginTop: -100
+        borderTopLeftRadius: hp('3%'),
+        borderTopRightRadius: hp('3%'),
+        marginTop: -hp('12%'),
+        minHeight: hp('80%'),
     },
     welcomeText: {
-        fontSize: RFValue(20),
+        fontSize: RFValue(22),
         fontWeight: 'bold',
         color: '#FF8800',
-        marginBottom: 15,
+        marginBottom: hp('1.5%'),
     },
     label: {
-        fontSize: RFValue(16),
-        marginTop: 10,
-        marginBottom: 10,
+        fontSize: RFValue(14),
+        marginTop: hp('1%'),
+        marginBottom: hp('0.5%'),
+        marginLeft:hp('0.8%')
     },
     input: {
         borderWidth: 1,
         borderColor: '#ccc',
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        marginBottom: 15
+        borderRadius: hp('0.8%'),
+        paddingHorizontal: wp('4%'),
+        paddingVertical: hp('1.1%'),
+        marginBottom: hp('1%'),
+        fontSize: RFValue(14),
+        color: '#000',
     },
     passwordContainer: {
         flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: hp('2%'),
     },
     inputPassword: {
+        flex: 1,
         borderWidth: 1,
         borderColor: '#ccc',
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        marginBottom: 15,
-        flex: 1,
-        color: '#000'
+        borderRadius: hp('0.8%'),
+        paddingHorizontal: wp('4%'),
+        paddingVertical: hp('1.1%'),
+        fontSize: RFValue(14),
+        color: '#000',
     },
-    icon: {
+    eyeIcon: {
         position: 'absolute',
-    },
-    forgotPassword: {
-        alignItems: 'flex-end',
-        marginVertical: 5,
-    },
-    forgotPasswordText: {
-        fontSize: RFValue(10),
-        color: '#555',
+        right: wp('3%'),
+        padding: 5,
     },
     loginButton: {
         backgroundColor: 'green',
-        paddingVertical: 10,
-        borderRadius: 5,
-        marginTop: 30
+        paddingVertical: hp('1.5%'),
+        borderRadius: hp('0.8%'),
+        marginTop: hp('3.5%'),
     },
     loginButtonText: {
         color: '#fff',
         textAlign: 'center',
-        fontSize: RFValue(14),
-        fontWeight: '400'
+        fontSize: RFValue(16),
+        fontWeight: '400',
     },
     orText: {
         textAlign: 'center',
-        marginTop: 25,
-        marginBottom: 10,
-        fontSize: RFValue(12),
+        marginTop: hp('3%'),
+        marginBottom: hp('1.5%'),
+        fontSize: RFValue(13),
         fontWeight: '600',
     },
     dividerContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginVertical: 15,
+        marginVertical: hp('2%'),
     },
     divider: {
         flex: 1,
@@ -318,35 +233,35 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc',
     },
     loginWith: {
-        marginHorizontal: 10,
-        fontSize: RFValue(12),
+        marginHorizontal: wp('3%'),
+        fontSize: RFValue(13),
         color: '#888',
     },
     socialIconContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginBottom: 20,
-        marginTop: 20
+        marginTop: hp('2%'),
+        marginBottom: hp('3%'),
     },
     button: {
-        backgroundColor: "#E7E7E7",
-        padding: 10,
-        borderRadius: 7
+        backgroundColor: '#E7E7E7',
+        padding: wp('3%'),
+        borderRadius: hp('1.2%'),
     },
     socialIcon: {
-        width: 35,
-        height: 35,
+        width: wp('9%'),
+        height: wp('9%'),
         resizeMode: 'contain',
     },
     signUpPrompt: {
-        marginTop: 60,
-        marginBottom: 20,
+        marginTop: hp('7%'),
+        marginBottom: hp('2.5%'),
         textAlign: 'center',
-        fontSize: RFValue(12),
+        fontSize: RFValue(13),
         color: '#000',
     },
     signInLink: {
-        color: "green",
-        fontWeight: '600'
-    }
+        color: 'green',
+        fontWeight: '600',
+    },
 });

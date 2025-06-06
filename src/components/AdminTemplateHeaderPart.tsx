@@ -9,16 +9,30 @@ import {
     TouchableWithoutFeedback,
     Dimensions,
     Image,
+    Alert,
+    ToastAndroid,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useNavigation } from '@react-navigation/native';
+import { logoutUser } from '../store/features/auth/authThunk';
+import { useDispatch } from 'react-redux';
+import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+
 
 const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
     const [menuVisible, setMenuVisible] = useState(false);
     const navigation = useNavigation();
     const { height } = Dimensions.get('window');
+    const dispatch = useDispatch();
+
+    const handleLogout = () => {
+        dispatch(logoutUser());
+        ToastAndroid.show('Logged Out Successfully!', ToastAndroid.SHORT);
+        // Navigate to the login screen or appropriate screen after logout0000
+        navigation.getParent()?.navigate('Login');
+    };
 
     const handleNavigate = (screen) => {
         setMenuVisible(false);
@@ -68,6 +82,10 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                     <Icon name='people' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Users</Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('PlansScreen')}>
+                                    <Icon name='work' size={24} color='#8F8F8F' />
+                                    <Text style={styles.menuItem}>Plans</Text>
+                                </TouchableOpacity>
                                 <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Investments')}>
                                     <Icon name='work' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Investments</Text>
@@ -80,6 +98,10 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                     <Icon name='file-upload' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Deposits</Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('WithdrawApprovals')}>
+                                    <Icon name='file-download' size={24} color='#8F8F8F' />
+                                    <Text style={styles.menuItem}>Withdraw Approvals</Text>
+                                </TouchableOpacity>
                                 <TouchableOpacity style={styles.menuButtons} onPress={() => handleNavigate('Withdrawals')}>
                                     <Icon name='file-download' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Withdrawals</Text>
@@ -88,7 +110,7 @@ const AdminTemplateHeaderPart = ({ name, paddingBottom = 40 }) => {
                                     <Icon name='settings' size={24} color='#8F8F8F' />
                                     <Text style={styles.menuItem}>Settings</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={styles.menuLogoutButton} onPress={() => console.log('Log Out')}>
+                                <TouchableOpacity onPress={handleLogout} style={styles.menuLogoutButton}>
                                     <Text style={styles.menuLogoutButtonText}>Log Out</Text>
                                 </TouchableOpacity>
                             </View>
@@ -105,8 +127,8 @@ export default AdminTemplateHeaderPart;
 const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: '#34A853',
-        paddingHorizontal: 16,
-        paddingTop: 40,
+        paddingHorizontal: wp('4%'),
+        paddingTop: hp('5%'),
     },
     greetingText: {
         fontSize: RFValue(20),
@@ -117,76 +139,77 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginVertical: 20
+        marginVertical: hp('2%'),
     },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#f2f2f2',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        width: "76%",
+        borderRadius: wp('3%'),
+        paddingHorizontal: wp('3%'),
+        paddingVertical: hp('1%'),
+        width: wp('70%'),
     },
     searchIcon: {
-        marginRight: 6,
+        marginRight: wp('2%'),
     },
     searchInput: {
         flex: 1,
-        fontSize: 14,
+        fontSize: RFValue(14),
         color: '#333',
         paddingVertical: 0,
     },
     iconButton: {
-        marginLeft: 12,
+        marginLeft: wp('3%'),
     },
     overlay: {
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'flex-end',
-        paddingTop: 60,
-        paddingRight: 10,
+        paddingTop: hp('8%'),
+        paddingRight: wp('2%'),
         backgroundColor: 'rgba(0,0,0,0.3)',
     },
     menu: {
         backgroundColor: '#fff',
-        paddingVertical: 20,
-        paddingHorizontal: 16,
-        borderRadius: 10,
-        width: 200,
+        paddingVertical: hp('2%'),
+        paddingHorizontal: wp('4%'),
+        borderRadius: wp('3%'),
+        width: wp('50%'),
         elevation: 5,
     },
     MenuItemImageContainer: {
-        width: 32,
-        height: 32,
-        marginLeft: 65,
-        marginVertical: 10
+        width: wp('8%'),
+        height: wp('8%'),
+        alignSelf: 'center',
+        marginVertical: hp('1%'),
     },
     MenuItemImage: {
-        width: "100%",
-        height: "100%",
-        resizeMode: 'contain'
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
     },
     menuButtons: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 10
+        gap: wp('2%'),
     },
     menuItem: {
-        fontSize: 16,
-        paddingVertical: 10,
+        fontSize: RFValue(16),
+        paddingVertical: hp('1%'),
         color: '#333',
     },
     menuLogoutButton: {
-        marginVertical: 15,
+        marginVertical: hp('2%'),
         backgroundColor: '#D9D9D9',
-        borderRadius: 6
+        borderRadius: wp('2%'),
     },
     menuLogoutButtonText: {
-        fontSize: 16,
-        paddingVertical: 10,
+        fontSize: RFValue(16),
+        paddingVertical: hp('1%'),
         color: '#000',
         textAlign: 'center',
-        fontWeight: '500'
+        fontWeight: '500',
     },
 });
+

@@ -28,3 +28,11 @@ export const getInvestmentsHistory = async (token) => {
     });
     return response.data;
 };
+export const subscribeInvestment = async (id, data, token) => {
+    const response = await axios.post(`${API_URL}/invest/subscribe/${id}`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response;
+};
