@@ -4,7 +4,6 @@ import {
   Dimensions,
   Easing,
   Image,
-  ImageBackground,
   Modal,
   StyleSheet,
   Text,
@@ -12,8 +11,6 @@ import {
   View,
 } from "react-native";
 import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
-import SpinPageBackSide from "../components/SpinPageBackSide";
-import { RFValue } from "react-native-responsive-fontsize";
 
 const { width } = Dimensions.get("window");
 const wheelSize = width * 0.8;
@@ -50,7 +47,9 @@ function calculateArc(startAngle, endAngle) {
 
   const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
 
-  return `M${r},${r} L${x1},${y1} A${r},${r} 0 ${largeArcFlag} 1 ${x2},${y2} Z`;
+  return (
+    `M${r},${r} L${x1},${y1} ` + `A${r},${r} 0 ${largeArcFlag} 1 ${x2},${y2} Z`
+  );
 }
 
 export default function FortuneWheel() {
@@ -59,7 +58,6 @@ export default function FortuneWheel() {
   const [modalVisible, setModalVisible] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
   const wheelRotation = useRef(0);
-  const { height, width } = Dimensions.get("window");
 
   const spinWheel = () => {
     if (isSpinning) return;
@@ -68,6 +66,7 @@ export default function FortuneWheel() {
     setModalVisible(false);
     const randomIndex = Math.floor(Math.random() * numberOfSegments);
 
+    // Subtract 90 deg to align the winner at the top (12 o'clock)
     const rotateTo =
       360 * 6 +
       (360 - (randomIndex * angleBySegment + angleBySegment / 2) - 90);
@@ -91,30 +90,20 @@ export default function FortuneWheel() {
     outputRange: ["0deg", "360deg"],
   });
 
+  // Knob size and style
   const knobSize = 44;
   const center = wheelSize / 2;
 
   return (
     <View style={styles.container}>
+      <Stack.Screen options={{ headerShown: false, statusBarStyle: "light" }} />
+
       {/* Title */}
-      <View style={styles.mainContainer}>
-        <Image
-          source={require("../assests/spinPageVectorImage.png")}
-          style={[styles.vectorImage, { right: width * 0.55, bottom: height * 0.08 }]}
-        />
-        <View style={[styles.contentTextContainer, { bottom: height * 0.1 }]}>
-          <Text style={styles.FortuneText}>
-            Fortune Awaits{"\n"}
-            <Text> You!</Text>
-          </Text>
-          <Text style={styles.spinContentText}>
-            Spin the Wheel and Score Big Today!
-          </Text>
-        </View>
-        <Image
-          source={require("../assests/spinPageRightSideVectorImage.png")}
-          style={[styles.vectorImage, { bottom: height * 0.01, right: width * -0.2 }]}
-        />
+      <View style={{ marginBottom: 50, alignItems: "center" }}>
+        <Text style={styles.title}>Fortune Awaits You!</Text>
+        <Text style={{ color: "white" }}>
+          Spin The Wheel And Score Big Today
+        </Text>
       </View>
 
       <View style={{ alignItems: "center", justifyContent: "center" }}>
@@ -147,10 +136,13 @@ export default function FortuneWheel() {
                 const endAngle = (i + 1) * angleBySegment;
                 const path = calculateArc(startAngle, endAngle);
 
+                // Text position
                 const r = (wheelSize / 2) * 0.75;
                 const midAngle = startAngle + angleBySegment / 2;
-                const x = wheelSize / 2 + r * Math.cos((Math.PI / 180) * midAngle);
-                const y = wheelSize / 2 + r * Math.sin((Math.PI / 180) * midAngle);
+                const x =
+                  wheelSize / 2 + r * Math.cos((Math.PI / 180) * midAngle);
+                const y =
+                  wheelSize / 2 + r * Math.sin((Math.PI / 180) * midAngle);
 
                 return (
                   <G key={`arc-${i}`}>
@@ -174,13 +166,10 @@ export default function FortuneWheel() {
           </Svg>
         </Animated.View>
 
-        {/* Knob */}
+        {/* Knob at the center, triangle pointing upward */}
         <View style={styles.knobContainer}>
           <View style={styles.knobInside}>
-            <Image
-              source={require("../assests/images/knob.png")}
-              style={styles.knobPointer}
-            />
+            <Image source={require("@/assests/images/knob.png")} style={styles.knobPointer} />
           </View>
         </View>
       </View>
@@ -196,10 +185,10 @@ export default function FortuneWheel() {
         </Text>
       </TouchableOpacity>
       <Text style={{ color: "white", margin: 15 }}>
-        Daily 3 Spins Free More Spins Via Referral
+        Daily 3 Spins Free More Spins Via Referal
       </Text>
 
-      {/* Modal */}
+      {/* Modal for Winner */}
       <Modal
         visible={modalVisible}
         transparent
@@ -208,11 +197,34 @@ export default function FortuneWheel() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Congratulations!</Text>
-            <Text style={styles.modalSubtitle}>You Won</Text>
-            <Text style={styles.modalWinner}>{winner}</Text>
+            <Text
+              style={{
+                fontSize: 28,
+                fontWeight: "bold",
+                color: "#FFD700",
+                marginBottom: 12,
+              }}
+            >
+              Congratulations!
+            </Text>
+            <Text style={{ fontSize: 20, color: "#333", marginBottom: 16 }}>
+              You Won
+            </Text>
+            <Text
+              style={{
+                fontSize: 40,
+                fontWeight: "bold",
+                color: "#27ae60",
+                marginBottom: 16,
+              }}
+            >
+              {winner}
+            </Text>
             <TouchableOpacity
-              style={[styles.button, { backgroundColor: "#27ae60", paddingHorizontal: 40 }]}
+              style={[
+                styles.button,
+                { backgroundColor: "#27ae60", paddingHorizontal: 40 },
+              ]}
               onPress={() => {
                 setModalVisible(false);
                 spinWheel();
@@ -241,24 +253,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  mainContainer: {
-    position: "relative",
-  },
-  vectorImage: {
-    resizeMode: "contain",
-    position: "absolute",
-  },
-  contentTextContainer: {},
-  FortuneText: {
-    fontSize: RFValue(36),
-    fontWeight: "700",
-    color: "#fff",
-    textAlign: "center",
-  },
-  spinContentText: {
-    color: "#fff",
-    textAlign: "center",
-    fontSize: RFValue(16),
+  title: {
+    fontSize: 34,
+    fontWeight: "bold",
+    color: "white",
   },
   knobContainer: {
     position: "absolute",
@@ -286,8 +284,10 @@ const styles = StyleSheet.create({
     width: 25,
     height: 30,
     borderRadius: 30,
+    // backgroundColor: "rgb(204, 157, 46)",
     justifyContent: "center",
     alignItems: "center",
+    // zIndex: 4,
   },
   button: {
     marginTop: 40,
@@ -319,22 +319,5 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
-  },
-  modalTitle: {
-    fontSize: 28,
-    fontWeight: "bold",
-    color: "#FFD700",
-    marginBottom: 12,
-  },
-  modalSubtitle: {
-    fontSize: 20,
-    color: "#333",
-    marginBottom: 16,
-  },
-  modalWinner: {
-    fontSize: 40,
-    fontWeight: "bold",
-    color: "#27ae60",
-    marginBottom: 16,
   },
 });

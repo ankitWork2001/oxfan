@@ -4,13 +4,14 @@ import SpinPageBackSide from '../components/SpinPageBackSide';
 import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import FortuneWheel from './spinwheele';
 
 const SpinScreen = () => {
   const [showModal, setShowModal] = useState(false);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ImageBackground
+      {/* <ImageBackground
         source={require('../assests/spinPageBGImage.png')}
         style={styles.BGImage}
         resizeMode="cover"
@@ -43,9 +44,10 @@ const SpinScreen = () => {
             Daily 3 Spins Free More spins via referral
           </Text>
         </View>
-      </ImageBackground>
+      </ImageBackground> */}
+      <FortuneWheel />
 
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={showModal}
@@ -77,7 +79,7 @@ const SpinScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
     </SafeAreaView>
   );
 };
@@ -118,7 +120,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'green',
     width: wp('80%'),
     paddingVertical: hp('1.5%'),
-    marginTop:hp('5%'),
+    marginTop: hp('5%'),
     borderRadius: wp('1%'),
     zIndex: 10,
     elevation: 10

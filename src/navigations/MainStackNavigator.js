@@ -11,6 +11,7 @@ import LoginScreen from '../screens/LoginScreen';
 import WithdrawalScreen from '../components/WithdrawalScreen';
 import DepositScreen from '../components/DepositScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
+import FortuneWheel from '../screens/spinwheele';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,11 @@ const MainStackNavigator = () => {
       <Stack.Screen name="Deposit" component={DepositScreen} />
       <Stack.Screen name="Withdraw" component={WithdrawalScreen} />
       <Stack.Screen name="Notifications" component={NotificationsScreen} />
+      <Stack.Screen
+        name="FortuneWheel"
+        component={FortuneWheel}
+        options={{ headerShown: false, statusBarStyle: "light" }}
+      />
     </Stack.Navigator>
   );
 };

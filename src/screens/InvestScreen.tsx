@@ -63,6 +63,12 @@ const InvestScreen = () => {
   const navigation = useNavigation();
   const [showBalanceModal, setShowBalanceModal] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<InvestmentPlan | null>(null);
+  const columnWidths = {
+    planType: 120,
+    amount: 100,
+    ended: 120,
+    status: 80,
+  };
 
   const { activeInvestments, investmentPlans, plansLoading, plansError } = useSelector(
     (state: RootState) => state.investment
@@ -305,53 +311,57 @@ const InvestScreen = () => {
           </ScrollView>
 
           <Text style={styles.investmentHeaderText}>Past  Investment</Text>
-          <View style={styles.InvestmentTablecontainer}>
-            <View style={styles.InvestmentTableheaderRow}>
-              <Text style={styles.InvestmentTableheaderText}>Plan Type</Text>
-              <Text style={styles.InvestmentTableheaderText}>Amount</Text>
-              <Text style={styles.InvestmentTableheaderText}>Ended</Text>
-              <Text style={styles.InvestmentTableheaderText}>Status</Text>
-            </View>
-
-            {investmentHistory.length === 0 ? (
-              <View style={styles.noDataRow}>
-                <Text style={styles.noDataText}>No investment history available</Text>
+          <ScrollView
+            horizontal={true}
+          >
+            <View style={styles.InvestmentTablecontainer}>
+              <View style={styles.InvestmentTableheaderRow}>
+                <Text style={[styles.InvestmentTableheaderText, { width: columnWidths.planType }]}>Plan Type</Text>
+                <Text style={[styles.InvestmentTableheaderText, { width: columnWidths.amount }]}>Amount</Text>
+                <Text style={[styles.InvestmentTableheaderText, { width: columnWidths.ended }]}>Ended</Text>
+                <Text style={[styles.InvestmentTableheaderText, { width: columnWidths.status }]}>Status</Text>
               </View>
-            ) : (
-              investmentHistory.map((item: InvestmentHistoryItem, index: number) => {
-                const planName = item.planId?.name || 'N/A';
-                const amount = `₹${item.amount}`;
-                const endDate = new Date(item.endDate || '').toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: 'short',
-                  year: 'numeric',
-                });
-                const status = item.status?.charAt(0).toUpperCase() + item.status?.slice(1);
 
-                // Determine color
-                let color = '#2E7D32'; // default green
-                if (planName.toLowerCase().includes('gold')) {
-                  color = '#FDBE00';
-                } else if (planName.toLowerCase().includes('premium')) {
-                  color = '#9747FF';
-                }
-                if (item.status === 'cancelled') {
-                  color = '#D32F2F';
-                } else if (item.status === 'pending') {
-                  color = '#FDBE00';
-                }
+              {investmentHistory.length === 0 ? (
+                <View style={styles.noDataRow}>
+                  <Text style={styles.noDataText}>No investment history available</Text>
+                </View>
+              ) : (
+                investmentHistory.map((item: InvestmentHistoryItem, index: number) => {
+                  const planName = item.planId?.name || 'N/A';
+                  const amount = `₹${item.amount}`;
+                  const endDate = new Date(item.endDate || '').toLocaleDateString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  });
+                  const status = item.status?.charAt(0).toUpperCase() + item.status?.slice(1);
 
-                return (
-                  <View style={styles.dataRow} key={item._id || index}>
-                    <Text style={[styles.cellText, { color }]}>{planName}</Text>
-                    <Text style={[styles.cellText, { color }]}>{amount}</Text>
-                    <Text style={[styles.cellText, { color }]}>{endDate}</Text>
-                    <Text style={[styles.cellText, { color }]}>{status}</Text>
-                  </View>
-                );
-              })
-            )}
-          </View>
+                  // Determine color
+                  let color = '#2E7D32'; // default green
+                  if (planName.toLowerCase().includes('gold')) {
+                    color = '#FDBE00';
+                  } else if (planName.toLowerCase().includes('premium')) {
+                    color = '#9747FF';
+                  }
+                  if (item.status === 'cancelled') {
+                    color = '#D32F2F';
+                  } else if (item.status === 'pending') {
+                    color = '#FDBE00';
+                  }
+
+                  return (
+                    <View style={styles.dataRow} key={item._id || index}>
+                      <Text style={[styles.cellText, { color, width: columnWidths.planType }]}>{planName}</Text>
+                      <Text style={[styles.cellText, { color, width: columnWidths.amount }]}>{amount}</Text>
+                      <Text style={[styles.cellText, { color, width: columnWidths.ended }]}>{endDate}</Text>
+                      <Text style={[styles.cellText, { color, width: columnWidths.status }]}>{status}</Text>
+                    </View>
+                  );
+                })
+              )}
+            </View>
+          </ScrollView>
         </View>
       </ScrollView>
       {showBalanceModal && selectedPlan && (
@@ -628,7 +638,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center'
   },
   modalInvestButtonText: {
-    textAlign:'center',
+    textAlign: 'center',
     color: '#fff',
     fontSize: RFValue(14),
     fontWeight: '600',
