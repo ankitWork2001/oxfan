@@ -10,36 +10,39 @@ import {
     ScrollView,
     ActivityIndicator,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // <-- Added useEffect
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import { useDispatch, useSelector } from 'react-redux';
-import { AppDispatch, RootState } from '../store/store';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/store';
 import { signInUser } from '../store/features/auth/authThunk';
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import SignInLoginHeadPart from '../components/SignInLoginHeadPart';
-
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { RFValue } from 'react-native-responsive-fontsize';
 
 const SignInScreen: React.FC = () => {
     const [email, setEmail] = useState<string>('');
     const [mobile, setMobile] = useState<string>('');
+    const [referral, setReferral] = useState<string>('');
     const [username, setUsername] = useState<string>('');
     const [name, setName] = useState<string>('');
     const [showPassword, setShowPassword] = useState(false);
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
-    const { error } = useSelector((state: RootState) => state.auth);
+    // const { error } = useSelector((state: RootState) => state.auth);
+
     const navigation = useNavigation<NavigationProp<any>>();
 
     const handleSignin = async () => {
         if (!name || !email || !password || !mobile) {
             return Alert.alert('Error', 'Please enter all credentials');
         }
+
         setLoading(true);
         try {
-            await dispatch(signInUser({ username, name, email, password, mobile })).unwrap();
+            await dispatch(signInUser({ name, username, email, password, mobile, code: referral, })).unwrap();
+
             navigation.navigate('Login');
             Alert.alert('SignUp Successful');
         } catch (err: any) {
@@ -49,6 +52,7 @@ const SignInScreen: React.FC = () => {
         }
     };
 
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: hp('10%') }}>
@@ -56,10 +60,10 @@ const SignInScreen: React.FC = () => {
 
                 <View style={styles.body}>
                     <Text style={styles.welcomeText}>Welcome!</Text>
-
                     <Text style={styles.label}>User Name</Text>
                     <TextInput
                         placeholder="username"
+                        placeholderTextColor="#888"
                         onChangeText={setUsername}
                         value={username}
                         style={styles.input}
@@ -69,6 +73,7 @@ const SignInScreen: React.FC = () => {
                     <Text style={styles.label}>Name</Text>
                     <TextInput
                         placeholder="Name"
+                        placeholderTextColor="#888"
                         onChangeText={setName}
                         value={name}
                         style={styles.input}
@@ -78,6 +83,7 @@ const SignInScreen: React.FC = () => {
                     <Text style={styles.label}>E-Mail Address</Text>
                     <TextInput
                         placeholder="Email"
+                        placeholderTextColor="#888"
                         onChangeText={setEmail}
                         value={email}
                         style={styles.input}
@@ -88,8 +94,19 @@ const SignInScreen: React.FC = () => {
                     <Text style={styles.label}>Mobile</Text>
                     <TextInput
                         placeholder="Mobile"
+                        placeholderTextColor="#888"
                         onChangeText={setMobile}
                         value={mobile}
+                        style={styles.input}
+                        keyboardType="number-pad"
+                    />
+
+                    <Text style={styles.label}>Referral Code</Text>
+                    <TextInput
+                        placeholder="Referral Code (optional)"
+                        placeholderTextColor="#888"
+                        onChangeText={setReferral}
+                        value={referral}
                         style={styles.input}
                         keyboardType="number-pad"
                     />
@@ -99,18 +116,32 @@ const SignInScreen: React.FC = () => {
                         <TextInput
                             onChangeText={setPassword}
                             value={password}
+                            placeholder="Password"
+                            placeholderTextColor="#888"
                             style={styles.inputPassword}
                             autoCapitalize="none"
                             autoCorrect={false}
                             secureTextEntry={!showPassword}
                         />
-                        <TouchableOpacity onPress={() => setShowPassword((prev) => !prev)} style={styles.eyeIcon} activeOpacity={0.7}>
-                            <Icon name={showPassword ? 'visibility-off' : 'visibility'} size={RFValue(18)} color="#000" />
+                        <TouchableOpacity
+                            onPress={() => setShowPassword((prev) => !prev)}
+                            style={styles.eyeIcon}
+                            activeOpacity={0.7}
+                        >
+                            <Icon
+                                name={showPassword ? 'visibility-off' : 'visibility'}
+                                size={RFValue(18)}
+                                color="#000"
+                            />
                         </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity onPress={handleSignin} style={styles.loginButton} disabled={loading}>
-                        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.loginButtonText}>Sign Up</Text>}
+                        {loading ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.loginButtonText}>Sign Up</Text>
+                        )}
                     </TouchableOpacity>
 
                     <Text style={styles.orText}>Or</Text>
@@ -123,13 +154,22 @@ const SignInScreen: React.FC = () => {
 
                     <View style={styles.socialIconContainer}>
                         <TouchableOpacity style={styles.button}>
-                            <Image style={styles.socialIcon} source={require('../assests/googleLogo.png')} />
+                            <Image
+                                style={styles.socialIcon}
+                                source={require('../assests/googleLogo.png')}
+                            />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button}>
-                            <Image style={styles.socialIcon} source={require('../assests/appleLogo.png')} />
+                            <Image
+                                style={styles.socialIcon}
+                                source={require('../assests/appleLogo.png')}
+                            />
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.button}>
-                            <Image style={styles.socialIcon} source={require('../assests/facebookLogo.png')} />
+                            <Image
+                                style={styles.socialIcon}
+                                source={require('../assests/facebookLogo.png')}
+                            />
                         </TouchableOpacity>
                     </View>
 
@@ -171,7 +211,7 @@ const styles = StyleSheet.create({
         fontSize: RFValue(14),
         marginTop: hp('1%'),
         marginBottom: hp('0.5%'),
-        marginLeft:hp('0.8%')
+        marginLeft: hp('0.8%'),
     },
     input: {
         borderWidth: 1,

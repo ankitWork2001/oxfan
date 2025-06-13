@@ -1,5 +1,5 @@
 import axios from 'axios'
-const API_URL = 'https://vtoxfambackend.onrender.com/api/admin';
+const API_URL = 'https://spine.onrender.com/api/admin';
 
 export const getDashboard = async (data, token) => {
     const response = await axios.get(`${API_URL}/dashboard`, {

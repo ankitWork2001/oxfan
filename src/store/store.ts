@@ -9,12 +9,15 @@ import depositsReducer from './features/adminDeposits/adminDepositsSlice';
 import withdrawalsReducer from './features/adminWithdrawals/adminWithdrawalsSlice';
 import plansReducer from './features/adminPlans/adminPlansSlice'
 import walletReducer from './features/wallet/walletSlice'
+import referralReducer from './features/refferal/refferalSlice'
+import spinReducer from './features/spin/spinSlice'
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
     investment: investmentReducer,       // from investmentSlice
     adminInvestment: adminInvestmentReducer,  // from adminInvestment slice
+    spin: spinReducer,
     adminAllUser: adminAllUserReducer, // from adminAllUserReducer slice
     adminDashboard: adminDashboardReducer, // from adminAllUserReducer slice
     adminSpinLogs: adminSpinLogsReducer,
@@ -22,6 +25,7 @@ const store = configureStore({
     withdrawals: withdrawalsReducer,
     plans: plansReducer,
     wallet: walletReducer,
+    referral: referralReducer,
   },
 });
 

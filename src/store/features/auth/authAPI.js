@@ -1,13 +1,14 @@
 import axios from 'axios'
-const API_URL = 'https://vtoxfambackend.onrender.com/api';
+const API_URL = 'https://spine.onrender.com/api';
 
-export const signInAPI = async ({ username, name, email, password, mobile }) => {
-    const response = await axios.post('https://vtoxfambackend.onrender.com/api/auth/signup', {
+export const signInAPI = async ({ username, name, email, password, mobile, code }) => {
+    const response = await axios.post('https://spine.onrender.com/api/auth/signup', {
         username,
         name,
         email,
         password,
         mobile,
+        code,
     });
     return response.data;
 };

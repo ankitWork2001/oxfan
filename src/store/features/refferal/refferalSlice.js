@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { fetchReferralCode } from "./refferalThunk";
+import { fetchReferralCode, submitReferral } from "./refferalThunk";
 
 const referralSlice = createSlice({
     name: 'referral',
@@ -7,16 +7,19 @@ const referralSlice = createSlice({
         code: null,
         loading: false,
         error: null,
+        submitSuccess: false, // Added to track referral submission success
     },
     reducers: {
         clearReferralState: (state) => {
             state.code = null;
             state.loading = false;
             state.error = null;
+            state.submitSuccess = false;
         },
     },
     extraReducers: (builder) => {
         builder
+            // Fetch Referral Code
             .addCase(fetchReferralCode.pending, (state) => {
                 state.loading = true;
                 state.error = null;
@@ -28,6 +31,21 @@ const referralSlice = createSlice({
             .addCase(fetchReferralCode.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            // Submit Referral
+            .addCase(submitReferral.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+                state.submitSuccess = false;
+            })
+            .addCase(submitReferral.fulfilled, (state, action) => {
+                state.loading = false;
+                state.submitSuccess = true;
+            })
+            .addCase(submitReferral.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+                state.submitSuccess = false;
             });
     },
 });
