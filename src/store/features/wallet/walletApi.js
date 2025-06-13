@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'https://vtoxfambackend.onrender.com/api';
+const API_URL = 'https://spine.onrender.com/api';
 
 
 export const getWalletBalance = async (token) => {

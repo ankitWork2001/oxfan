@@ -40,8 +40,6 @@ const UsersScreen = () => {
   };
 
   useEffect(() => {
-    lor(); // Listen to orientation changes
-
     if (token) {
       dispatch(fetchAllUsers())
         .unwrap()
@@ -52,8 +50,6 @@ const UsersScreen = () => {
     if (basicUser?._id && !userDetails) {
       dispatch(getUserDetails(basicUser._id));
     }
-
-    return () => rol(); // Clean up orientation listener
   }, [dispatch, token, userDetails, basicUser]);
 
   return (
@@ -101,7 +97,7 @@ const UsersScreen = () => {
                       {user.status}
                     </Text>
                     <View style={[styles.cell, { width: columnWidths.actions, flexDirection: 'row' }]}>
-                      <TouchableOpacity 
+                      <TouchableOpacity
                         onPress={() => navigation.navigate('UserView', { user })}
                         style={styles.actionButton}
                       >

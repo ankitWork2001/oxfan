@@ -15,10 +15,10 @@ import { jwtDecode } from 'jwt-decode';
 
 export const signInUser = createAsyncThunk(
     'auth/signInUser',
-    async ({ username, name, email, password, mobile }, { dispatch, rejectWithValue }) => {
+    async ({ username, name, email, password, mobile, code }, { dispatch, rejectWithValue }) => {
         dispatch(signInStart());
         try {
-            const userData = await signInAPI({ username, name, email, password, mobile });
+            const userData = await signInAPI({ username, name, email, password, mobile, code });
             const payload = {
                 user: userData.user,  // use the user from response
                 token: userData.token,
