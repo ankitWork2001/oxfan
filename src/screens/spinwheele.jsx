@@ -15,28 +15,14 @@ import {
 import Svg, { Circle, G, Path, Text as SvgText } from "react-native-svg";
 import { RFValue } from "react-native-responsive-fontsize";
 import { useDispatch, useSelector } from "react-redux";
-import { getSpinLogs } from "../store/features/adminSpinLogs/adminSpinLogsApi";
+// import { getSpinLogs } from "../store/features/adminSpinLogs/adminSpinLogsApi";
+import { getSpinCount, playSpin, prizelist, purchaseSpin } from "../store/features/spin/spinThunk";
 
 const { width } = Dimensions.get("window");
 const wheelSize = width * 0.8;
 const numberOfSegments = 12;
 const angleBySegment = 360 / numberOfSegments;
 const oneTurn = 360;
-
-const prizes = [
-  "50$",
-  "1$",
-  "5$",
-  "20$",
-  "JACKPOT",
-  "15$",
-  "100$",
-  "1$",
-  "500$",
-  "10$",
-  "ZERO",
-  "2$",
-];
 
 const colors = ["#ffbf80", "#661a00"];
 
@@ -61,38 +47,114 @@ export default function FortuneWheel() {
   const [winner, setWinner] = useState("");
   const [isSpinning, setIsSpinning] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
   const animatedValue = useRef(new Animated.Value(0)).current;
   const wheelRotation = useRef(0);
   const { height, width } = Dimensions.get('window');
   const dispatch = useDispatch();
-  const { lastSpinResult, remainingSpins, walletBalance, loading, error } = useSelector((state) => state.spin);
-  
 
-  const spinWheel = () => {
+  const { prizeList = [], remainingSpins = 0 } = useSelector((state) => state.spin);
+
+  useEffect(() => {
+    dispatch(prizelist())
+      .unwrap()
+      .then((data) => {
+        console.log("Prize list fetched:", data);
+      })
+      .catch((err) => {
+        console.error("Prize list fetch error:", err);
+      });
+    dispatch(getSpinCount());
+  }, [dispatch]);
+
+  // Use dynamic prize list with fallback
+  const prizes = prizeList.length > 0
+    ? prizeList.map((p) =>
+      typeof p === "string"
+        ? p
+        : p?.label || `$${p?.value ?? p}`
+    )
+    : [
+      "50$",
+      "1$",
+      "5$",
+      "20$",
+      "JACKPOT",
+      "15$",
+      "100$",
+      "1$",
+      "500$",
+      "10$",
+      "ZERO",
+      "2$",
+    ];
+
+
+
+
+  const spinWheel = async () => {
     if (isSpinning) return;
+
+    if (remainingSpins <= 0) {
+      setShowPurchaseModal(true); // 🔥 Show modal before trying to spin
+      return;
+    }
+
     setIsSpinning(true);
-    setWinner("");
+    setWinner('');
     setModalVisible(false);
-    const randomIndex = Math.floor(Math.random() * numberOfSegments);
 
-    // Subtract 90 deg to align the winner at the top (12 o'clock)
-    const rotateTo =
-      360 * 6 +
-      (360 - (randomIndex * angleBySegment + angleBySegment / 2) - 90);
+    try {
+      const data = await dispatch(playSpin()).unwrap();
+      console.log("spin data:", data.resultValue);
 
-    Animated.timing(animatedValue, {
-      toValue: rotateTo,
-      duration: 4000,
-      easing: Easing.out(Easing.cubic),
-      useNativeDriver: true,
-    }).start(() => {
-      wheelRotation.current = rotateTo % oneTurn;
+      const resultValue = data.spin.resultValue ?? 0;
+      const formattedResult = `$${Number(resultValue).toFixed(2)}`;
+      setWinner(formattedResult);
+
+      const randomIndex = Math.floor(Math.random() * numberOfSegments);
+      const rotateTo =
+        360 * 6 + (360 - (randomIndex * angleBySegment + angleBySegment / 2) - 90);
+
+      Animated.timing(animatedValue, {
+        toValue: rotateTo,
+        duration: 4000,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true,
+      }).start(() => {
+        wheelRotation.current = rotateTo % oneTurn;
+        animatedValue.setValue(wheelRotation.current);
+        setIsSpinning(false);
+        setTimeout(() => setModalVisible(true), 500);
+      });
+    } catch (error) {
+      console.error("Error spinning:", error);
       setIsSpinning(false);
-      setWinner(prizes[randomIndex]);
-      animatedValue.setValue(wheelRotation.current);
-      setTimeout(() => setModalVisible(true), 500);
-    });
+
+      if (typeof error === "string" && error.toLowerCase().includes("no spins")) {
+        setShowPurchaseModal(true); // 🔥 trigger modal
+      }
+    }
   };
+
+
+  const handlePurchaseSpins = async () => {
+    setPurchaseLoading(true);
+    try {
+      await dispatch(purchaseSpin(1)).unwrap(); // purchase 3 spins
+      await dispatch(getSpinCount());
+      setShowPurchaseModal(false);
+    } catch (err) {
+      console.error("Purchase failed:", err);
+      alert(err || "Failed to purchase spins.");
+    } finally {
+      setPurchaseLoading(false);
+    }
+  };
+
+
+
 
   const interpolatedRotate = animatedValue.interpolate({
     inputRange: [0, 360],
@@ -275,6 +337,44 @@ export default function FortuneWheel() {
               onPress={() => setModalVisible(false)}
             >
               <Text style={{ color: "#555", fontSize: 16 }}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+      {/* Modal for purchase */}
+      <Modal
+        visible={showPurchaseModal}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowPurchaseModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 12 }}>
+              No Spins Left
+            </Text>
+            <Text style={{ fontSize: 16, marginBottom: 20 }}>
+              You’ve used all your spins. Would you like to purchase more?
+            </Text>
+
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: "#27ae60", paddingHorizontal: 30 },
+              ]}
+              onPress={handlePurchaseSpins}
+              disabled={purchaseLoading}
+            >
+              <Text style={styles.buttonText}>
+                {purchaseLoading ? "Purchasing..." : "Purchase 1 Spin"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{ marginTop: 16 }}
+              onPress={() => setShowPurchaseModal(false)}
+            >
+              <Text style={{ color: "#555", fontSize: 16 }}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>

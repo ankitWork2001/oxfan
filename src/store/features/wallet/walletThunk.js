@@ -2,7 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { getWalletBalance } from './walletApi';
 
 export const fetchWalletBalance = createAsyncThunk(
-    'walletBalance/fetchWalletBalance',
+    'wallet/fetchWalletBalance',
     async (_, { getState, rejectWithValue }) => {
         try {
             const token = getState().auth.token; // ✅ get token from Redux

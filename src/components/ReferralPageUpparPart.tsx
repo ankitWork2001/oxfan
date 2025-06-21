@@ -57,10 +57,10 @@ const ReferralPageUpparPart = () => {
 
                         <Image
                             source={require('../assests/refferalPageBoyGirlImage.png')}
-                            style={[styles.refferralImage, { bottom: hp('3%') }]}
+                            style={[styles.refferralImage, { bottom: hp('4%') }]}
                         />
 
-                        <View style={[styles.wrapper, { bottom: hp('3%') }]}>
+                        <View style={[styles.wrapper, { bottom: hp('5%') }]}>
                             <View style={styles.couponContainer}>
                                 <View style={styles.codeSection}>
                                     <Text style={styles.codeText}>{referralCode}</Text>
@@ -73,21 +73,21 @@ const ReferralPageUpparPart = () => {
                         </View>
 
                         <View style={styles.socialIconsContainer}>
-                            <TouchableOpacity style={styles.IconImage}>
+                            <TouchableOpacity style={[styles.IconImage, { bottom: hp('2%') }]}>
                                 <Image
                                     source={require('../assests/refferalPageWhatsappImage.png')}
                                     resizeMode='contain'
                                     style={styles.iconImageStyle}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.IconImage, { bottom: hp('2%') }]}>
+                            <TouchableOpacity style={[styles.IconImage, { bottom: hp('5%') }]}>
                                 <Image
                                     source={require('../assests/refferalPageTelegramImage.png')}
                                     resizeMode='contain'
                                     style={styles.iconImageStyle}
                                 />
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.IconImage}>
+                            <TouchableOpacity style={[styles.IconImage, { bottom: hp('2%') }]}>
                                 <Image
                                     source={require('../assests/refferalPageSmsImage.png')}
                                     resizeMode='contain'
@@ -106,25 +106,31 @@ export default ReferralPageUpparPart;
 
 const styles = StyleSheet.create({
     MainContainer: {
+        flex: 1,
         backgroundColor: '#fff',
     },
     BGImage: {
         width: '100%',
         height: '100%',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingTop: hp('2%'),
     },
     ReferHeaderText: {
-        fontSize: RFValue(20),
-        fontWeight: '500',
+        fontSize: RFValue(22),
+        fontWeight: '600',
         color: '#fff',
         textAlign: 'center',
-        marginTop: hp('2%'),
+        marginBottom: hp('2%'),
     },
     refferralImage: {
+        width: wp('90%'),
+        height: hp('30%'),
         resizeMode: 'contain',
-        width: '100%',
     },
     wrapper: {
         alignItems: 'center',
+        marginTop: hp('2%'),
     },
     couponContainer: {
         flexDirection: 'row',
@@ -133,19 +139,20 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: '#ccc',
-        width: wp('70%'),
-        maxWidth: 320,
-        height: hp('7%'),
+        width: wp('75%'),
+        maxWidth: wp('90%'),
+        height: hp('6.5%'),
+        elevation: 4,
     },
     codeSection: {
         flex: 2,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
+        paddingHorizontal: wp('3%'),
     },
     codeText: {
         fontSize: RFValue(16),
-        fontWeight: '400',
+        fontWeight: '500',
         color: '#000',
     },
     copySection: {
@@ -155,34 +162,38 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     copyText: {
-        fontSize: RFValue(16),
-        fontWeight: '400',
+        fontSize: RFValue(14),
+        fontWeight: '500',
         color: '#fff',
     },
     shareNow: {
         marginTop: hp('2%'),
-        fontSize: RFValue(18),
+        fontSize: RFValue(16),
         color: '#fff',
-        fontWeight: '400',
+        fontWeight: '500',
     },
     socialIconsContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-evenly',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginTop: hp('2%'),
-        gap: wp('2%'),
+        width: '100%',
+        paddingHorizontal: wp('10%'),
     },
     IconImage: {
         backgroundColor: '#FFFFFF',
-        padding: wp('3%'),
+        padding: wp('3.5%'),
         borderRadius: wp('5%'),
-        width: wp('15%'),
+        width: wp('16%'),
+        height: wp('16%'),
         alignItems: 'center',
         justifyContent: 'center',
         elevation: 6,
     },
     iconImageStyle: {
-        width: wp('8.5%'),
-        height: wp('8.5%'),
+        width: wp('8%'),
+        height: wp('8%'),
+        resizeMode: 'contain',
     },
 });
+

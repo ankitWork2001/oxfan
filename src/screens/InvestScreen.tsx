@@ -110,8 +110,9 @@ const InvestScreen = () => {
     dispatch(fetchWalletBalance())
       .unwrap()
       .then((data) => {
-        console.log("wallet data:", data.wallet.balance);
-        setUserBalance(data?.wallet?.balance)
+        const roundedBalance = Number(data.wallet.balance).toFixed(2);
+        setUserBalance(roundedBalance);
+        console.log("wallet data:", roundedBalance);
       })
       .catch((err) => {
         console.log('Error fetching Wallet:', err);
@@ -166,6 +167,7 @@ const InvestScreen = () => {
           .catch(err => {
             console.error('Failed to fetch updated investment history:', err);
           });
+        dispatch(fetchWalletBalance())
       })
       .catch(err => {
         console.error('Subscription failed:', err);

@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { getRefferalCode, subscribeReferral } from './refferalApi';
+import { getRefferalCode, getRefferalSummary, getRefferalTree, subscribeReferral } from './refferalApi';
 
 // Async Thunk
 export const fetchReferralCode = createAsyncThunk(
@@ -8,6 +8,20 @@ export const fetchReferralCode = createAsyncThunk(
         try {
             const token = getState().auth.token; // ✅ get token from Redux
             const data = await getRefferalCode(token);
+            return data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || error.message || 'Failed to fetch referral code'
+            );
+        }
+    }
+);
+export const fetchReferralTree = createAsyncThunk(
+    'referral/fetchReferralTree',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const token = getState().auth.token; // ✅ get token from Redux
+            const data = await getRefferalTree(token);
             return data;
         } catch (error) {
             return rejectWithValue(

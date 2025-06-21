@@ -16,7 +16,7 @@ import {
 import { RFValue } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import {
@@ -55,19 +55,24 @@ const HomeScreen: React.FC = () => {
         }
     };
 
-    useEffect(() => {
-        dispatch(fetchWalletBalance())
-            .unwrap()
-            .then((data) => {
-                console.log("wallet data:", data.wallet.balance);
-                setUserBalance(data.wallet.balance)
-            })
-            .catch((err) => {
-                console.log('Error fetching Wallet:', err);
-            })
-    }, [dispatch])
+    useFocusEffect(
+        React.useCallback(() => {
+            dispatch(fetchWalletBalance())
+                .unwrap()
+                .then((data) => {
+                    const roundedBalance = Number(data.wallet.balance).toFixed(2);
+                    setUserBalance(roundedBalance);
+
+                    console.log("wallet data homepage:", roundedBalance);
+                })
+                .catch((err) => {
+                    console.log('Error in HomePage fetching Wallet:', err);
+                });
+        }, [dispatch])
+    )
 
     const user = useSelector((state: RootState) => state.auth.user);
+    console.log('Home page user : ', user)
 
     return (
         <ScrollView contentContainerStyle={[styles.scrollViewContent, { paddingBottom: insets.bottom + 100 }]}>
@@ -149,7 +154,7 @@ const HomeScreen: React.FC = () => {
                         <View style={styles.divider} />
                         <View style={styles.summaryItem}>
                             <Text style={styles.label}>Frozen Amount</Text>
-                            <Text style={[styles.value, { color: 'red' }]}>0</Text>
+                            <Text style={[styles.value, { color: 'red' }]}>{user?.wallet.lockedBalance}</Text>
                         </View>
                     </View>
 

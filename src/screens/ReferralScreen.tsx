@@ -9,16 +9,52 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { RFValue } from 'react-native-responsive-fontsize';
 import ReferralPageUpparPart from '../components/ReferralPageUpparPart';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
+import { fetchReferralBonusHistory, fetchReferralSummary, fetchRewardWallet } from '../store/features/reward/rewardThunk';
 
 const ReferralScreen = () => {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation();
+  const dispatch = useDispatch<AppDispatch>();
+  const { referralBonusHistory, referralSummary } = useSelector((state: RootState) => state.reward);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      dispatch(fetchReferralSummary())
+        .unwrap()
+        .then((data) => {
+          console.log('fetching referral summary:', data);
+        })
+        .catch((error) => {
+          console.error('❌ Error fetching referral summary:', error);
+        });
+
+      dispatch(fetchRewardWallet())
+        .unwrap()
+        .then((data) => {
+          console.log('fetching Reward Wallet:', data);
+        })
+        .catch((error) => {
+          console.error('❌ Error fetching  Reward Wallet:', error);
+        });
+
+      dispatch(fetchReferralBonusHistory())
+        .unwrap()
+        .then((data) => {
+          console.log('fetching Reward History:', data);
+        })
+        .catch((error) => {
+          console.error('❌ Error fetching  Reward History:', error);
+        });
+    }, [dispatch])
+  );
 
   return (
     <SafeAreaView style={styles.MainContainer}>
@@ -63,9 +99,9 @@ const ReferralScreen = () => {
         <Text style={[styles.headerText, { marginTop: hp('3%') }]}>Your Team</Text>
         <View style={styles.yourTeamContainer}>
           {[
-            { label: 'Total Referrals', value: '25', bgColor: '#FDBE00' },
-            { label: 'Earnings', value: '₹700', bgColor: '#10B981' },
-            { label: 'Active Investors', value: '15', bgColor: '#FF8632' },
+            { label: 'Total Referrals', value: `${referralSummary.totalReferrals}`, bgColor: '#FDBE00' },
+            { label: 'Earnings', value: `${referralSummary.earnings}`, bgColor: '#10B981' },
+            { label: 'Active Investors', value: `${referralSummary.activeInvestors ?? '0'}`, bgColor: '#FF8632' },
           ].map((item, index) => (
             <View
               key={index}
@@ -86,17 +122,29 @@ const ReferralScreen = () => {
             <Text style={styles.TableheaderText}>Level</Text>
           </View>
 
-          {[
-            { date: '20 April, 2025', amount: '₹100', level: '1' },
-            { date: '10 April, 2025', amount: '₹50', level: '2' },
-            { date: '10 April, 2025', amount: '₹20', level: '3' },
-          ].map((item, index) => (
-            <View key={index} style={[styles.dataRow, { backgroundColor: '#84D299' }]}>
-              <Text style={[styles.cellText, { color: '#fff' }]}>{item.date}</Text>
-              <Text style={[styles.cellText, { color: '#fff' }]}>{item.amount}</Text>
-              <Text style={[styles.cellText, { color: '#fff' }]}>{item.level}</Text>
+          {referralBonusHistory?.length > 0 ? (
+            referralBonusHistory.map((item, index) => (
+              <View key={index} style={[styles.dataRow, { backgroundColor: '#84D299' }]}>
+                <Text style={[styles.cellText, { color: '#fff' }]} allowFontScaling={false}>
+                  {item.date
+                    ? new Date(item.date).toLocaleDateString('en-IN', {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric',
+                    })
+                    : 'N/A'}
+                </Text>
+                <Text style={[styles.cellText, { color: '#fff' }]}>{`₹${item.amount}`}</Text>
+                <Text style={[styles.cellText, { color: '#fff' }]}>1</Text>
+              </View>
+            ))
+          ) : (
+            <View style={[styles.dataRow, { justifyContent: 'center', backgroundColor: '#84D299' }]}>
+              <Text style={[styles.cellText, { color: '#000', textAlign: 'center' }]}>
+                No reward history available
+              </Text>
             </View>
-          ))}
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

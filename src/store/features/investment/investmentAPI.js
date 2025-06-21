@@ -12,7 +12,7 @@ export const getPlansApi = async (token) => {
     return response.data;
 };
 export const getActiveInvestments = async (token) => {
-    const response = await axios.get(`${API_URL}/invest/active`, {
+    const response = await axios.get(`${API_URL}/invest/my-active`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -21,7 +21,7 @@ export const getActiveInvestments = async (token) => {
 };
 
 export const getInvestmentsHistory = async (token) => {
-    const response = await axios.get(`${API_URL}/invest/history`, {
+    const response = await axios.get(`${API_URL}/invest/my-history`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

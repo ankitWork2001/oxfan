@@ -8,7 +8,7 @@ const initialState = {
 };
 
 const walletBalanceSlice = createSlice({
-    name: 'walletBalance',
+    name: 'wallet',
     initialState,
     reducers: {
         clearWalletBalanceState: (state) => {
@@ -25,7 +25,7 @@ const walletBalanceSlice = createSlice({
             })
             .addCase(fetchWalletBalance.fulfilled, (state, action) => {
                 state.loading = false;
-                state.balance = action.payload; // assuming API returns { balance: ... }
+                state.balance = action.payload.wallet; // assuming API returns { balance: ... }
             })
             .addCase(fetchWalletBalance.rejected, (state, action) => {
                 state.loading = false;
