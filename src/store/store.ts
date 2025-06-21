@@ -11,6 +11,7 @@ import plansReducer from './features/adminPlans/adminPlansSlice'
 import walletReducer from './features/wallet/walletSlice'
 import referralReducer from './features/refferal/refferalSlice'
 import spinReducer from './features/spin/spinSlice'
+import rewardReducer from './features/reward/rewardSlice'
 
 const store = configureStore({
   reducer: {
@@ -26,6 +27,7 @@ const store = configureStore({
     plans: plansReducer,
     wallet: walletReducer,
     referral: referralReducer,
+    reward: rewardReducer,
   },
 });
 

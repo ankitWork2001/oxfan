@@ -12,6 +12,15 @@ export const getRefferalCode = async (token) => {
     return response.data;
 };
 
+export const getRefferalTree = async (token) => {
+    const response = await axios.get(`${API_URL}/tree`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
+
 export const subscribeReferral = async (token, referralCode) => {
     const response = await axios.post(
         `${API_URL}/refer`,

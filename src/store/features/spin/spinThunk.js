@@ -1,12 +1,12 @@
-// src/redux/thunks/spinThunk.js
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { playSpinAPI, purchaseSpinAPI, getSpinLogsAPI } from '../../services/spinAPI';
+import { playSpinAPI, purchaseSpinAPI, getSpinLogsAPI, prizelistAPI, getSpinCountAPI } from './spinApi';
 
 export const purchaseSpin = createAsyncThunk(
     'spin/purchaseSpin',
-    async (spinCount, { rejectWithValue }) => {
+    async (spinCount, { getState, rejectWithValue }) => {
         try {
-            return await purchaseSpinAPI(spinCount);
+            const token = getState().auth.token;
+            return await purchaseSpinAPI(token, spinCount);
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || 'Failed to purchase spins');
         }
@@ -15,22 +15,50 @@ export const purchaseSpin = createAsyncThunk(
 
 export const playSpin = createAsyncThunk(
     'spin/playSpin',
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
-            return await playSpinAPI();
+            const token = getState().auth.token;
+            return await playSpinAPI(token);
         } catch (err) {
-            return rejectWithValue(err.response?.data?.message || 'Failed to play spin');
+            console.log('playSpin API error:', err?.response?.data || err.message);
+            return rejectWithValue(err?.response?.data?.message || 'Failed to play spin');
+        }
+    }
+
+);
+export const prizelist = createAsyncThunk(
+    'spin/prizelist',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const token = getState().auth.token;
+            return await prizelistAPI(token);
+        } catch (err) {
+            console.log('prizelist API error:', err?.response?.data || err.message);
+            return rejectWithValue(err?.response?.data?.message || 'Failed to get prizelist');
         }
     }
 );
 
 export const getSpinLogs = createAsyncThunk(
     'spin/getSpinLogs',
-    async (_, { rejectWithValue }) => {
+    async (_, { getState, rejectWithValue }) => {
         try {
-            return await getSpinLogsAPI();
+            const token = getState().auth.token;
+            return await getSpinLogsAPI(token);
         } catch (err) {
             return rejectWithValue(err.response?.data?.message || 'Failed to fetch spin logs');
+        }
+    }
+);
+
+export const getSpinCount = createAsyncThunk(
+    'spin/getSpinCount',
+    async (_, { getState, rejectWithValue }) => {
+        try {
+            const token = getState().auth.token;
+            return await getSpinCountAPI(token);
+        } catch (err) {
+            return rejectWithValue(err?.response?.data?.message || 'Failed to fetch spin count');
         }
     }
 );

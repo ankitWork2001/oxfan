@@ -1,16 +1,20 @@
 import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUserDetails } from '../store/features/auth/authThunk';
 import { useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useFocusEffect } from '@react-navigation/native';
+import { fetchWalletBalance } from '../store/features/wallet/walletThunk';
+import { AppDispatch } from '../store/store';
 
 const ProfileScreenUpperside = () => {
     const navigation = useNavigation();
-    const dispatch = useDispatch();
+    const dispatch = useDispatch<AppDispatch>();
     const { basicUser, userDetails } = useSelector(state => state.auth);
+    const [userBalance, setUserBalance] = useState<number>(0);
 
     useEffect(() => {
         if (basicUser?._id && !userDetails) {
@@ -18,6 +22,23 @@ const ProfileScreenUpperside = () => {
         }
     }, [basicUser, userDetails]);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            dispatch(fetchWalletBalance())
+                .unwrap()
+                .then((data) => {
+                    const roundedBalance = Number(data.wallet.balance).toFixed(2);
+                    setUserBalance(roundedBalance);
+                    console.log("wallet data:", roundedBalance);
+                })
+                .catch((err) => {
+                    console.log('Error fetching Wallet:', err);
+                });
+
+        }, [dispatch])
+    );
+
+    // Now safe to return null after all hooks
     if (!userDetails) return null;
 
     return (
@@ -51,7 +72,7 @@ const ProfileScreenUpperside = () => {
                     </View>
                     <Text style={styles.profileName}>{userDetails?.username}</Text>
                     <View style={styles.balanceBox}>
-                        <Text style={styles.BalanceText}>₹{userDetails?.wallet?.balance} Balance</Text>
+                        <Text style={styles.BalanceText}>₹{userBalance} Balance</Text>
                     </View>
 
                     <Icon style={styles.doubleArrowIcon} color='#FFFFFF' name='keyboard-double-arrow-down' size={RFValue(24)} />

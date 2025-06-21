@@ -1,11 +1,13 @@
 // src/redux/slices/spinSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import { playSpin, purchaseSpin, getSpinLogs } from './spinThunk';
+import { playSpin, purchaseSpin, getSpinLogs, prizelist, getSpinCount } from './spinThunk';
+
 
 const initialState = {
     loading: false,
     error: null,
     spinLogs: [],
+    prizeList: [],
     lastSpinResult: null,
     remainingSpins: 0,
     walletBalance: 0,
@@ -43,8 +45,8 @@ const spinSlice = createSlice({
             .addCase(playSpin.fulfilled, (state, action) => {
                 state.loading = false;
                 state.lastSpinResult = action.payload.spin;
-                state.remainingSpins = action.payload.userData.spinCount;
-                state.walletBalance = action.payload.userWallet.balance;
+                state.remainingSpins = action.payload.userData?.spinCount ?? state.remainingSpins;
+                state.walletBalance = action.payload.UserReward?.rewardBalance ?? state.walletBalance;
             })
             .addCase(playSpin.rejected, (state, action) => {
                 state.loading = false;
@@ -62,7 +64,34 @@ const spinSlice = createSlice({
             .addCase(getSpinLogs.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            //priceLIsts
+            .addCase(prizelist.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(prizelist.fulfilled, (state, action) => {
+                state.loading = false;
+                state.prizeList = action.payload || [];
+            })
+            .addCase(prizelist.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || 'Something went wrong';
+            })
+            //spin count
+            .addCase(getSpinCount.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getSpinCount.fulfilled, (state, action) => {
+                state.loading = false;
+                state.remainingSpins = action.payload.spinCount ?? 0;
+            })
+            .addCase(getSpinCount.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
     },
 });
 
