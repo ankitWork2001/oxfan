@@ -8,7 +8,7 @@ import {
 } from './rewardThunk';
 
 const initialState = {
-    rewardBalance: 0,
+    rewardBalance: [],
     referralBonusHistory: [],
     referralSummary: [],
     loading: false,
@@ -28,7 +28,7 @@ const rewardSlice = createSlice({
             })
             .addCase(fetchRewardWallet.fulfilled, (state, action) => {
                 state.loading = false;
-                state.rewardBalance = action.payload.rewardBalance;
+                state.rewardBalance = action.payload;
             })
             .addCase(fetchRewardWallet.rejected, (state, action) => {
                 state.loading = false;

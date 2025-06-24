@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { updateUserDetails } from './authThunk';
+import { getDashboardsummary, updateUserDetails } from './authThunk';
 
 const authSlice = createSlice({
     name: 'auth',
@@ -10,6 +10,7 @@ const authSlice = createSlice({
         error: null,
         basicUser: null, // after login
         userDetails: null, // after getUserDetails
+        Dashboardsummary: [],
     },
     reducers: {
         signInStart(state) {
@@ -98,6 +99,19 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload;
             })
+            //getDashboardsummary
+            .addCase(getDashboardsummary.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(getDashboardsummary.fulfilled, (state, action) => {
+                state.loading = false;
+                state.Dashboardsummary = action.payload; // Set the tree data
+            })
+            .addCase(getDashboardsummary.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            });
     },
 });
 

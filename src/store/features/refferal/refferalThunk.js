@@ -33,9 +33,8 @@ export const fetchReferralTree = createAsyncThunk(
 
 export const submitReferral = createAsyncThunk(
     'referral/submitReferral',
-    async ({ referralCode }, thunkAPI) => {
+    async ({ referralCode, token }, thunkAPI) => {
         try {
-            const token = getState().auth.token;
             const response = await subscribeReferral(token, referralCode);
             return response;
         } catch (error) {

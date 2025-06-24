@@ -1,4 +1,4 @@
-import { signInAPI, loginAPI, fetchUserDetails, updateUserProfile } from './authAPI';
+import { signInAPI, loginAPI, fetchUserDetails, updateUserProfile, fetchDashboardsummary } from './authAPI';
 import {
     signInStart,
     signInSuccess,
@@ -117,6 +117,20 @@ export const updateUserDetails = createAsyncThunk(
             return updatedUser;
         } catch (error) {
             return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const getDashboardsummary = createAsyncThunk(
+    'profile/Dashboardsummary',
+    async (token, { rejectWithValue }) => {
+        try {
+            const data = await fetchDashboardsummary(token);
+            return data;
+        } catch (error) {
+            return rejectWithValue(
+                error.response?.data?.message || error.message || 'Failed to fetch fetchDashboardsummary'
+            );
         }
     }
 );

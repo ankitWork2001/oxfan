@@ -24,6 +24,8 @@ const WithdrawalScreen = () => {
     const dispatch = useDispatch();
     const { basicUser, userDetails } = useSelector(state => state.auth);
 
+    const [selectedMethod, setSelectedMethod] = useState(null); // ✅ Hook must be at the top
+
     useEffect(() => {
         if (basicUser?._id && !userDetails) {
             dispatch(getUserDetails(basicUser._id));
@@ -32,8 +34,6 @@ const WithdrawalScreen = () => {
     }, [basicUser, userDetails]);
 
     if (!userDetails) return null;
-
-    const [selectedMethod, setSelectedMethod] = useState(null);
 
     const methods = [
         { id: 'bank', label: 'Bank', icon: require('../assests/WithdrawScreenBankImage.png') },
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         height: hp('20%'),
     },
     image: {
-        top:hp('4.5%'),
+        top: hp('4.5%'),
         width: '100%',
         height: '100%',
     },

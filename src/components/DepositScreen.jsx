@@ -24,6 +24,8 @@ const DepositScreen = () => {
     const dispatch = useDispatch();
     const { basicUser, userDetails } = useSelector(state => state.auth);
 
+    const [selectedMethod, setSelectedMethod] = useState(null); // ✅ move above all returns
+
     useEffect(() => {
         if (basicUser?._id && !userDetails) {
             dispatch(getUserDetails(basicUser._id));
@@ -31,9 +33,7 @@ const DepositScreen = () => {
         console.log('Withdrawal Screen User data:', userDetails);
     }, [basicUser, userDetails]);
 
-    if (!userDetails) return null;
-
-    const [selectedMethod, setSelectedMethod] = useState(null);
+    if (!userDetails) return null; // ✅ Now it's safe
 
     const methods = [
         { id: 'bank', label: 'Bank', icon: require('../assests/WithdrawScreenBankImage.png') },

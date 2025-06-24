@@ -1,8 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { fetchWalletBalance } from './walletThunk';
+import { fetchTransactions, fetchWalletBalance } from './walletThunk';
 
 const initialState = {
     balance: null,
+    transactions: [],
     loading: false,
     error: null,
 };
@@ -30,7 +31,21 @@ const walletBalanceSlice = createSlice({
             .addCase(fetchWalletBalance.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+            //Transactions
+            .addCase(fetchTransactions.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchTransactions.fulfilled, (state, action) => {
+                state.loading = false;
+                state.transactions = action.payload.transactions; // assuming API returns { balance: ... }
+            })
+            .addCase(fetchTransactions.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+
     },
 });
 
