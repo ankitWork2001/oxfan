@@ -1,6 +1,7 @@
 import {
     FlatList,
     SafeAreaView,
+    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -9,8 +10,11 @@ import {
 import React, { useState } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from '../store/store';
+import { fetchTransactions } from '../store/features/wallet/walletThunk';
 
 type TransactionType = 'all' | 'deposit' | 'withdraw' | 'bonus';
 
@@ -21,93 +25,97 @@ const filterTabs = [
     { label: 'Bonus', key: 'bonus' },
 ] as const;
 
-const transactions = [
-    { date: '1 May 2025', type: 'Deposit', amount: '₹1,000', status: 'Completed' },
-    { date: '2 May 2025', type: 'Withdraw', amount: '₹520', status: 'Pending' },
-    { date: '2 May 2025', type: 'Bonus', amount: '₹1,000', status: 'Completed' },
-    { date: '3 May 2025', type: 'Deposit', amount: '₹1,000', status: 'Completed' },
-    { date: '4 May 2025', type: 'Bonus', amount: '₹1,000', status: 'Completed' },
-];
 
 const TransactionHistoryScreen = () => {
     const navigation = useNavigation();
     const [selectedType, setSelectedType] = useState<TransactionType>('all');
+    const dispatch = useDispatch<AppDispatch>();
+    const transactions = useSelector((state: RootState) => state.wallet.transactions || []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            dispatch(fetchTransactions());
+        }, [dispatch])
+    );
+
 
     const filteredTransactions =
         selectedType === 'all'
             ? transactions
             : transactions.filter(t => t.type.toLowerCase() === selectedType);
 
-    const renderItem = ({ item }: { item: typeof transactions[number] }) => (
-        <View style={styles.row}>
-            <Text style={styles.cell}>{item.date}</Text>
-            <Text style={styles.cell}>{item.type}</Text>
-            <Text style={styles.cell}>{item.amount}</Text>
-            <Text
-                style={[
-                    styles.cell,
-                    item.status === 'Pending' ? styles.pending : styles.completed,
-                ]}
-            >
-                {item.status}
-            </Text>
-        </View>
-    );
+
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
-            <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                    <TouchableOpacity onPress={() => navigation.goBack()}>
-                        <Icon name="arrow-back" size={RFValue(24)} color="#fff" />
+            <ScrollView contentContainerStyle={{ paddingBottom: hp('4%') }}>
+                <View style={styles.header}>
+                    <View style={styles.headerLeft}>
+                        <TouchableOpacity onPress={() => navigation.goBack()}>
+                            <Icon name="arrow-back" size={RFValue(24)} color="#fff" />
+                        </TouchableOpacity>
+                        <Text style={styles.headerText}>Transaction History</Text>
+                    </View>
+                    <TouchableOpacity>
+                        <Icon name="settings" size={RFValue(24)} color="#fff" />
                     </TouchableOpacity>
-                    <Text style={styles.headerText}>Transaction History</Text>
                 </View>
-                <TouchableOpacity>
-                    <Icon name="settings" size={RFValue(24)} color="#fff" />
-                </TouchableOpacity>
-            </View>
 
-            <Text style={styles.sectionTitle}>All Transactions</Text>
+                <Text style={styles.sectionTitle}>All Transactions</Text>
 
-            <View style={styles.container}>
-                <View style={styles.tabs}>
-                    {filterTabs.map(tab => (
-                        <View key={tab.key} style={styles.tabButtonContainer}>
-                            <TouchableOpacity
-                                style={[
-                                    styles.tabButton,
-                                    selectedType === tab.key && styles.activeTabButton,
-                                ]}
-                                onPress={() => setSelectedType(tab.key)}
-                            >
+                <View style={styles.container}>
+                    <View style={styles.tabs}>
+                        {filterTabs.map(tab => (
+                            <View key={tab.key} style={styles.tabButtonContainer}>
+                                <TouchableOpacity
+                                    style={[
+                                        styles.tabButton,
+                                        selectedType === tab.key && styles.activeTabButton,
+                                    ]}
+                                    onPress={() => setSelectedType(tab.key)}
+                                >
+                                    <Text
+                                        style={[
+                                            styles.tabText,
+                                            selectedType === tab.key && styles.activeTabText,
+                                        ]}
+                                    >
+                                        {tab.label}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    </View>
+
+                    <View style={styles.tableHeader}>
+                        <Text style={styles.headerCell}>Date</Text>
+                        <Text style={styles.headerCell}>Type</Text>
+                        <Text style={styles.headerCell}>Amount</Text>
+                        <Text style={styles.headerCell}>Status</Text>
+                    </View>
+
+                    {filteredTransactions.length === 0 ? (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>No transactions found</Text>
+                    ) : (
+                        filteredTransactions.map((item, index) => (
+                            <View key={index} style={styles.row}>
+                                <Text style={styles.cell}>{new Date(item.createdAt).toLocaleDateString()}</Text>
+                                <Text style={styles.cell}>{item.type}</Text>
+                                <Text style={styles.cell}>${item.amount}</Text>
                                 <Text
                                     style={[
-                                        styles.tabText,
-                                        selectedType === tab.key && styles.activeTabText,
+                                        styles.cell,
+                                        item.status === 'pending' ? styles.pending : styles.completed,
                                     ]}
                                 >
-                                    {tab.label}
+                                    {item.status}
                                 </Text>
-                            </TouchableOpacity>
-                        </View>
-                    ))}
-                </View>
+                            </View>
+                        ))
+                    )}
 
-                <View style={styles.tableHeader}>
-                    <Text style={styles.headerCell}>Date</Text>
-                    <Text style={styles.headerCell}>Type</Text>
-                    <Text style={styles.headerCell}>Amount</Text>
-                    <Text style={styles.headerCell}>Status</Text>
                 </View>
-
-                <FlatList
-                    data={filteredTransactions}
-                    keyExtractor={(_, index) => index.toString()}
-                    renderItem={renderItem}
-                    contentContainerStyle={{ paddingBottom: hp('4%') }}
-                />
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };

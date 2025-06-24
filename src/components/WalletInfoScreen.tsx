@@ -10,16 +10,25 @@ import {
 import React, { useEffect } from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { RFValue } from 'react-native-responsive-fontsize';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 import { AppDispatch, RootState } from '../store/store';
 import { getUserDetails } from '../store/features/auth/authThunk';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
+import { fetchRewardWallet } from '../store/features/reward/rewardThunk';
 
 const WalletInfoScreen = () => {
     const navigation = useNavigation();
     const { basicUser, userDetails } = useSelector((state: RootState) => state.auth);
     const dispatch = useDispatch<AppDispatch>();
+    const { rewardBalance } = useSelector((state: RootState) => state.reward);
+
+
+    useFocusEffect(
+        React.useCallback(() => {
+            dispatch(fetchRewardWallet());
+        }, [dispatch])
+    );
 
     useEffect(() => {
         if (basicUser?._id && !userDetails) {
@@ -62,7 +71,9 @@ const WalletInfoScreen = () => {
                     <View style={styles.cardTextContainer}>
                         <Text style={styles.cardText}>Main Balance: ${userDetails?.wallet?.balance}</Text>
                         <Text style={styles.cardText}>Locked Balance: ${userDetails?.wallet?.lockedBalance}</Text>
-                        <Text style={styles.cardText}>Binance Wallet: 0x****1234</Text>
+                        <Text style={styles.cardText}>spine Balance: ${rewardBalance.spineBalance}</Text>
+                        <Text style={styles.cardText}>reward Balance: ${rewardBalance.rewardBalance}</Text>
+                        <Text style={styles.cardText}>referral Balance: ${rewardBalance.referralBalance}</Text>
                         <Text style={styles.cardText}>Bonus Cash: ${userDetails?.wallet?.bonus ?? '0'}</Text>
                     </View>
                     <TouchableOpacity style={styles.Button}>

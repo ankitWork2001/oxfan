@@ -29,6 +29,15 @@ export const fetchUserDetails = async (employeeId) => {
     return data;
 };
 
+export const fetchDashboardsummary = async (token) => {
+    const response = await axios.get(`${API_URL}/profile/dashboardsummary`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return response.data;
+};
+
 export const updateUserProfile = async (data, token) => {
     const response = await axios.put(`${API_URL}/profile/update`, data, {
         headers: {

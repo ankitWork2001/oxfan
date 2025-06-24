@@ -23,7 +23,8 @@ import {
     widthPercentageToDP as wp,
     heightPercentageToDP as hp
 } from 'react-native-responsive-screen';
-import { fetchWalletBalance } from '../store/features/wallet/walletThunk';
+import { getDashboardsummary } from '../store/features/auth/authThunk';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface ImageItem {
     id: string;
@@ -42,9 +43,12 @@ const HomeScreen: React.FC = () => {
     const insets = useSafeAreaInsets();
     const [currentIndex, setCurrentIndex] = useState(0);
     const flatListRef = useRef<FlatList<ImageItem>>(null);
-    const navigation = useNavigation();
+    const navigation = useNavigation<any>();
     const dispatch = useDispatch<AppDispatch>();
     const [userBalance, setUserBalance] = useState<number>(0); // Replace this with actual data from Redux or API
+    const user = useSelector((state: RootState) => state.auth.user);
+    const { Dashboardsummary } = useSelector((state: RootState) => state.auth);
+
 
 
     const handleNavigation = (routeName: string) => {
@@ -57,21 +61,30 @@ const HomeScreen: React.FC = () => {
 
     useFocusEffect(
         React.useCallback(() => {
-            dispatch(fetchWalletBalance())
-                .unwrap()
-                .then((data) => {
-                    const roundedBalance = Number(data.wallet.balance).toFixed(2);
-                    setUserBalance(roundedBalance);
+            const fetchDashboard = async () => {
+                try {
+                    const token = await AsyncStorage.getItem('token');
+                    if (token) {
+                        dispatch(getDashboardsummary(token))
+                            .unwrap()
+                            .then((data) => {
+                                console.log('getDashboardsummary:', data);
+                            })
+                            .catch((err) => {
+                                console.log('❌ Error in HomePage fetching Dashboardsummary:', err);
+                            });
+                    } else {
+                        console.warn('⚠️ Token not found in AsyncStorage');
+                    }
+                } catch (error) {
+                    console.error('❌ Error reading token from AsyncStorage:', error);
+                }
+            };
 
-                    console.log("wallet data homepage:", roundedBalance);
-                })
-                .catch((err) => {
-                    console.log('Error in HomePage fetching Wallet:', err);
-                });
+            fetchDashboard();
         }, [dispatch])
-    )
+    );
 
-    const user = useSelector((state: RootState) => state.auth.user);
     console.log('Home page user : ', user)
 
     return (
@@ -144,17 +157,17 @@ const HomeScreen: React.FC = () => {
                     <View style={styles.summaryCard}>
                         <View style={styles.summaryItem}>
                             <Text style={styles.label}>Today's Earnings</Text>
-                            <Text style={[styles.value, { color: '#007BFF' }]}>₹120</Text>
+                            <Text style={[styles.value, { color: '#007BFF' }]}>{Dashboardsummary?.data?.todaysEarnings}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.summaryItem}>
                             <Text style={styles.label}>Balance</Text>
-                            <Text style={[styles.value, { color: '#fbc02d' }]}>{userBalance}</Text>
+                            <Text style={[styles.value, { color: '#fbc02d' }]}>{Dashboardsummary?.data?.balance}</Text>
                         </View>
                         <View style={styles.divider} />
                         <View style={styles.summaryItem}>
                             <Text style={styles.label}>Frozen Amount</Text>
-                            <Text style={[styles.value, { color: 'red' }]}>{user?.wallet.lockedBalance}</Text>
+                            <Text style={[styles.value, { color: 'red' }]}>{Dashboardsummary?.data?.frozenAmount}</Text>
                         </View>
                     </View>
 

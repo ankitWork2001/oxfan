@@ -19,6 +19,7 @@ import { NavigationProp, useNavigation } from '@react-navigation/native';
 import SignInLoginHeadPart from '../components/SignInLoginHeadPart';
 import { widthPercentageToDP as wp, heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { RFValue } from 'react-native-responsive-fontsize';
+import CountryPicker, { Country, CountryCode } from 'react-native-country-picker-modal';
 
 const SignInScreen: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -30,6 +31,9 @@ const SignInScreen: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const dispatch = useDispatch<AppDispatch>();
+    const [countryCode, setCountryCode] = useState<CountryCode>('IN'); // default India
+    const [country, setCountry] = useState<Country | null>(null);
+    const [withCallingCode, setWithCallingCode] = useState(true);
     // const { error } = useSelector((state: RootState) => state.auth);
 
     const navigation = useNavigation<NavigationProp<any>>();
@@ -41,7 +45,8 @@ const SignInScreen: React.FC = () => {
 
         setLoading(true);
         try {
-            await dispatch(signInUser({ name, username, email, password, mobile, code: referral, })).unwrap();
+            const fullMobile = `+${country?.callingCode?.[0] || '91'}${mobile}`;
+            await dispatch(signInUser({ name, username, email, password, mobile: fullMobile, code: referral, })).unwrap();
 
             navigation.navigate('Login');
             Alert.alert('SignUp Successful');
@@ -92,14 +97,36 @@ const SignInScreen: React.FC = () => {
                     />
 
                     <Text style={styles.label}>Mobile</Text>
-                    <TextInput
-                        placeholder="Mobile"
-                        placeholderTextColor="#888"
-                        onChangeText={setMobile}
-                        value={mobile}
-                        style={styles.input}
-                        keyboardType="number-pad"
-                    />
+                    <View style={styles.mobileRow}>
+                        <CountryPicker
+                            countryCode={countryCode}
+                            withFilter
+                            withFlag
+                            withCallingCode
+                            withEmoji
+                            onSelect={(country: Country) => {
+                                setCountryCode(country.cca2);
+                                setCountry(country);
+                            }}
+                            containerButtonStyle={styles.countryPickerButton}
+                        />
+                        <Icon
+                            name='keyboard-arrow-down'
+                            size={RFValue(18)}
+                            color="#000"
+                        />
+                        <Text style={styles.callingCodeText}>
+                            +{country?.callingCode?.[0] ?? '91'}
+                        </Text>
+                        <TextInput
+                            placeholder="Enter mobile number"
+                            placeholderTextColor="#888"
+                            onChangeText={setMobile}
+                            value={mobile}
+                            style={styles.mobileInput}
+                            keyboardType="number-pad"
+                        />
+                    </View>
 
                     <Text style={styles.label}>Referral Code</Text>
                     <TextInput
@@ -235,6 +262,29 @@ const styles = StyleSheet.create({
         borderRadius: hp('0.8%'),
         paddingHorizontal: wp('4%'),
         paddingVertical: hp('1.1%'),
+        fontSize: RFValue(14),
+        color: '#000',
+    },
+    mobileRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: hp('0.8%'),
+        paddingHorizontal: wp('3%'),
+        marginBottom: hp('1.5%'),
+    },
+    countryPickerButton: {
+        marginRight: wp('0%'),
+    },
+    callingCodeText: {
+        marginRight: wp('2%'),
+        fontSize: RFValue(14),
+        color: '#000',
+    },
+    mobileInput: {
+        flex: 1,
         fontSize: RFValue(14),
         color: '#000',
     },
